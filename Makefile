@@ -16,4 +16,4 @@ pack:
 	docker build -f ./Dockerfile -t skaioskit/voter-service .
 
 run:
-	docker run -it -v ${DIR}/data:/data -p 8081:80 -e APP_PORT_NUMBER="80" -e APP_MYSQL_CONN_STR="root:password@tcp(docker.for.mac.localhost)/form?charset=utf8&parseTime=True&loc=Local" skaioskit/voter-service /voter
+	docker run -it -v ${DIR}/data:/data -p 8081:80 -e APP_PORT_NUMBER="80" -e APP_MYSQL_CONN_STR="root:password@tcp(docker.for.mac.localhost)/voter?charset=utf8&parseTime=True&loc=Local" skaioskit/voter-service /voter
