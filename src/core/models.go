@@ -1,4 +1,4 @@
-package main
+package core
 import (
     "github.com/jinzhu/gorm"
 )
@@ -38,7 +38,8 @@ type Election struct {
 
 //Voter
 type Voter struct {
-    gorm.Model
+    //gorm.Model
+    ID uint `gorm:"primary_key"`
 
     LastName string  `gorm:"size:35"`
     FirstName string  `gorm:"size:20"`
@@ -47,4 +48,11 @@ type Voter struct {
     Gender string       `gorm:"size:3"`
 
     VoterId uint64
+}
+
+//VoterHistory
+type VoterHistory struct {
+    ID uint `gorm:"primary_key"`
+    VoterId uint64
+    ElectionCode uint64
 }

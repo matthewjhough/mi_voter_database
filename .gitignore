@@ -12,6 +12,7 @@
 *.out
 
 # 
+.DS_Store
 *.swp
 src/voter
 src/vendor

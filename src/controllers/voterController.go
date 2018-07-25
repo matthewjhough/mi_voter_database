@@ -1,9 +1,11 @@
-package main
+package controllers
 
 import (
     "net/http"
 
     skaioskit "github.com/nathanmentley/skaioskit-go-core"
+
+    //"skaioskit/services"
 )
 
 //Form Controller
