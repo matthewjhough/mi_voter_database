@@ -1,6 +1,7 @@
 package commands
 
 import (
+    "fmt"
     "os"
     "bytes"
     "bufio"
@@ -172,8 +173,9 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
     }
     defer file.Close()
 
+    insertClause := "INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, birth_year, gender, date_of_registration, address, county_code, jurisdiction_code, ward, school_code, state_house, state_senate, us_congress, county_commissioner, village_code, village_precinct, school_precinct, permanent_absentee_ind, status_type, uocava_status) VALUES "
     var buffer bytes.Buffer
-    buffer.WriteString("INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, gender) VALUES ")
+    buffer.WriteString(insertClause)
     vals := []interface{}{}
 
     counter := 0
@@ -182,44 +184,118 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
     for scanner.Scan() {
         line := scanner.Text()
         voterId, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[448:461], " "), "0"), 0, 64)
-
         if err != nil {
-            //panic(err)
+            fmt.Println("voter id: " + err.Error())
             //TODO Log
+            continue
+        }
+
+        dateOfReg, err := fmtdate.Parse("MMDDYYYY", line[83:91])
+        if err != nil {
+            fmt.Println("date of reg: " + err.Error())
+            //TODO Log
+            continue
+        }
+        countyCode, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[461:463], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("county code: " + err.Error())
+            //TODO Log
+            continue
+        }
+        jurisdictionCode, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[463:468], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("jurisdiction code: " + err.Error())
+            //TODO Log
+            continue
+        }
+        schoolCode, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[474:479], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("school code: " + err.Error())
+            //TODO Log
+            continue
+        }
+        stateHouse, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[479:484], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("stateHouse: " + err.Error())
+            //TODO Log
+            continue
+        }
+        stateSenate, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[484:489], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("stateSenate: " + err.Error())
+            //TODO Log
+            continue
+        }
+        usCongress, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[489:494], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("usCongress: " + err.Error())
+            //TODO Log
+            continue
+        }
+        countyCommissioner, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[494:499], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("countyCommissioner: " + err.Error())
+            //TODO Log
+            continue
+        }
+        var villageCode *uint
+        villageCodeTmp, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[499:504], " "), "0"), 0, 32)
+        if err != nil {
+            villageCode = nil
         } else {
-            counter++
-            buffer.WriteString("(?, ?, ?, ?, ?, ?), ")
-            vals = append(
-                vals,
-                voterId, //VoterId: 
-                strings.Trim(line[0:35], " "), //LastName: 
-                strings.Trim(line[35:55], " "), //FirstName: 
-                strings.Trim(line[55:75], " "), //MiddleName: 
-                strings.Trim(line[75:78], " "), //NameSuffix: 
-                strings.Trim(line[82:83], " "),  //Gender: 
-            )
+            villageCodeTmp32 := uint(villageCodeTmp)
+            villageCode = &villageCodeTmp32
+        }
 
-            if counter > 3000 {
-                sqlStr := buffer.String()
-                //trim the last ,
-                sqlStr = sqlStr[0:len(sqlStr)-2]
+        counter++
+        buffer.WriteString("(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), ")
+        vals = append(
+            vals,
+            voterId, //VoterId: 
+            strings.Trim(line[0:35], " "), //LastName: 
+            strings.Trim(line[35:55], " "), //FirstName: 
+            strings.Trim(line[55:75], " "), //MiddleName: 
+            strings.Trim(line[75:78], " "), //NameSuffix: 
+            strings.Trim(line[78:82], " "),  //BirthYear: 
+            strings.Trim(line[82:83], " "),  //Gender:
+            dateOfReg.Format("2006-01-02 15:04:05"),
+            strings.Trim(line[91:448], " "),  //Address:
+            uint(countyCode),
+            uint(jurisdictionCode),
+            strings.Trim(line[468:474], " "), //Ward:
+            uint(schoolCode),
+            uint(stateHouse),
+            uint(stateSenate),
+            uint(usCongress),
+            uint(countyCommissioner),
+            villageCode,
+            strings.Trim(line[504:510], " "), //VillagePrecinct
+            strings.Trim(line[510:516], " "), //SchoolPrecinct
+            strings.Trim(line[516:517], " "), //PermanentAbsenteeInd
+            strings.Trim(line[517:519], " "), //StatusType
+            strings.Trim(line[519:520], " "), //UOCAVAStatus
+        )
 
-                //prepare the statement
-                stmt, err := db.DB().Prepare(sqlStr)
-                if err != nil {
-                    panic(err)
-                }
-                _, err = stmt.Exec(vals...)
-                if err != nil {
-                    panic(err)
-                }
-                stmt.Close()
+        if counter > 2000 {
+            sqlStr := buffer.String()
+            //trim the last ,
+            sqlStr = sqlStr[0:len(sqlStr)-2]
 
-                counter = 0
-                vals = []interface{}{}
-                buffer.Reset()
-                buffer.WriteString("INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, gender) VALUES ")
+            //prepare the statement
+            stmt, err := db.DB().Prepare(sqlStr)
+            if err != nil {
+                panic(err)
             }
+            _, err = stmt.Exec(vals...)
+            if err != nil {
+                panic(err)
+            }
+            stmt.Close()
+
+            counter = 0
+            vals = []interface{}{}
+            buffer.Reset()
+            buffer.WriteString(insertClause)
         }
     }
     if err := scanner.Err(); err != nil {
@@ -253,7 +329,8 @@ func ensureVoterHistories(db *gorm.DB, service services.IVoterHistoryService) {
     defer file.Close()
 
     var buffer bytes.Buffer
-    buffer.WriteString("INSERT INTO voter_histories(voter_id, election_code) VALUES ")
+    insertSqlClause := "INSERT INTO voter_histories(voter_id, election_code, county_code, jurisdiction_code, school_code, absentee_ind) VALUES "
+    buffer.WriteString(insertSqlClause)
     vals := []interface{}{}
 
     counter := 0
@@ -262,41 +339,68 @@ func ensureVoterHistories(db *gorm.DB, service services.IVoterHistoryService) {
     for scanner.Scan() {
         line := scanner.Text()
         voterId, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[0:13], " "), "0"), 0, 64)
-        code, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[25:38], " "), "0"), 0, 64)
-
         if err != nil {
-            //panic(err)
+            fmt.Println("voter code: " + err.Error())
             //TODO Log
-        } else {
-            counter++
-            buffer.WriteString("(?, ?), ")
-            vals = append(
-                vals,
-                voterId,
-                code,
-            )
+            continue
+        }
+        code, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[25:38], " "), "0"), 0, 64)
+        if err != nil {
+            fmt.Println("election code: " + err.Error())
+            //TODO Log
+            continue
+        }
+        countyCode, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[13:15], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("county code: " + err.Error())
+            //TODO Log
+            continue
+        }
+        jurisdictionCode, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[15:20], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("jurisdiction code: " + err.Error())
+            //TODO Log
+            continue
+        }
+        schoolCode, err := strconv.ParseUint(strings.TrimLeft(strings.Trim(line[20:25], " "), "0"), 0, 32)
+        if err != nil {
+            fmt.Println("school code: " + err.Error())
+            //TODO Log
+            continue
+        }
 
-            if counter > 3000 {
-                sqlStr := buffer.String()
-                //trim the last ,
-                sqlStr = sqlStr[0:len(sqlStr)-2]
+        counter++
+        buffer.WriteString("(?, ?, ?, ?, ?, ?), ")
+        vals = append(
+            vals,
+            voterId,
+            code,
+            countyCode,
+            jurisdictionCode,
+            schoolCode,
+            line[38:39],
+        )
 
-                //prepare the statement
-                stmt, err := db.DB().Prepare(sqlStr)
-                if err != nil {
-                    panic(err)
-                }
-                _, err = stmt.Exec(vals...)
-                if err != nil {
-                    panic(err)
-                }
-                stmt.Close()
+        if counter > 6000 {
+            sqlStr := buffer.String()
+            //trim the last ,
+            sqlStr = sqlStr[0:len(sqlStr)-2]
 
-                counter = 0
-                vals = []interface{}{}
-                buffer.Reset()
-                buffer.WriteString("INSERT INTO voter_histories(voter_id, election_code) VALUES ")
+            //prepare the statement
+            stmt, err := db.DB().Prepare(sqlStr)
+            if err != nil {
+                panic(err)
             }
+            _, err = stmt.Exec(vals...)
+            if err != nil {
+                panic(err)
+            }
+            stmt.Close()
+
+            counter = 0
+            vals = []interface{}{}
+            buffer.Reset()
+            buffer.WriteString(insertSqlClause)
         }
     }
     if err := scanner.Err(); err != nil {

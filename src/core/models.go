@@ -50,7 +50,7 @@ type Election struct {
 
     Name string  `gorm:"size:255"`
     Code uint64
-    Date time.Time
+    Date time.Time `gorm:"type:datetime"`
 }
 
 //Voter
@@ -62,14 +62,34 @@ type Voter struct {
     FirstName string  `gorm:"size:20"`
     MiddleName string  `gorm:"size:20"`
     NameSuffix string  `gorm:"size:3"`
+    BirthYear string  `gorm:"size:4"`
     Gender string       `gorm:"size:3"`
-
+    DateOfRegistration time.Time `gorm:"type:datetime"`
+    Address string       `gorm:"size:511"`
     VoterId uint64
+    CountyCode uint
+    JurisdictionCode uint
+    Ward string `gorm:"size:6"`
+    SchoolCode uint
+    StateHouse uint
+    StateSenate uint
+    UsCongress uint
+    CountyCommissioner uint
+    VillageCode uint
+    VillagePrecinct string `gorm:"size:6"`
+    SchoolPrecinct string `gorm:"size:6"`
+    PermanentAbsenteeInd string  `gorm:"size:1"`
+    StatusType string        `gorm:"size:2"`
+    UOCAVAStatus string        `gorm:"size:1"`
 }
 
 //VoterHistory
 type VoterHistory struct {
     ID uint `gorm:"primary_key"`
     VoterId uint64
+    CountyCode uint
+    JurisdictionCode uint
+    SchoolCode uint
     ElectionCode uint64
+    AbsenteeInd string  `gorm:"size:1"`
 }
