@@ -38,13 +38,13 @@ func (p *VoterService) EnsureVoterTable() {
     p.db.AutoMigrate(&core.Voter{})
 }
 func (p *VoterService) EnsureVoter(voter core.Voter) {
-    //existing, err := p.GetVoter(voter.VoterId)
+    existing, err := p.GetVoter(voter.VoterId)
 
-    //if err != nil {
-    p.CreateVoter(voter)
-    //} else {
-    //    voter.ID = existing.ID
-    //    p.UpdateVoter(voter)
-    //}
+    if err != nil {
+        p.CreateVoter(voter)
+    } else {
+        voter.ID = existing.ID
+        p.UpdateVoter(voter)
+    }
 }
 

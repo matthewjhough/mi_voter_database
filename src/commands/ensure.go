@@ -2,6 +2,7 @@ package commands
 
 import (
     "os"
+    "bytes"
     "bufio"
     "strconv"
     "strings"
@@ -110,7 +111,7 @@ func ensureElections(service services.IElectionService) {
     scanner := bufio.NewScanner(file)
     for scanner.Scan() {
         line := scanner.Text()
-        code, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[0:21], " "), "0"), 0, 64)
+        code, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[0:13], " "), "0"), 0, 64)
         if err != nil {
             panic(err)
         }
@@ -128,14 +129,18 @@ func ensureElections(service services.IElectionService) {
 
 func ensureVoters(db *gorm.DB, service services.IVoterService) {
     service.EnsureVoterTable()
-    tx := db.Begin()
-    counter := 0
 
     file, err := os.Open("/data/entire_state_v.lst")
     if err != nil {
         panic(err)
     }
     defer file.Close()
+
+    var buffer bytes.Buffer
+    buffer.WriteString("INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, gender) VALUES ")
+    vals := []interface{}{}
+
+    counter := 0
 
     scanner := bufio.NewScanner(file)
     for scanner.Scan() {
@@ -147,29 +152,136 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
             //TODO Log
         } else {
             counter++
-            voter := core.Voter{
-                VoterId: voterId,
-                LastName: strings.Trim(line[0:35], " "),
-                FirstName: strings.Trim(line[35:55], " "),
-                MiddleName: strings.Trim(line[55:75], " "),
-                NameSuffix: strings.Trim(line[75:78], " "),
-                Gender: strings.Trim(line[82:83], " "),
-            }
-            tx.Create(&voter)
+            buffer.WriteString("(?, ?, ?, ?, ?, ?), ")
+            vals = append(
+                vals,
+                voterId, //VoterId: 
+                strings.Trim(line[0:35], " "), //LastName: 
+                strings.Trim(line[35:55], " "), //FirstName: 
+                strings.Trim(line[55:75], " "), //MiddleName: 
+                strings.Trim(line[75:78], " "), //NameSuffix: 
+                strings.Trim(line[82:83], " "),  //Gender: 
+            )
 
-            if counter > 50000 {
+            if counter > 3000 {
+                sqlStr := buffer.String()
+                //trim the last ,
+                sqlStr = sqlStr[0:len(sqlStr)-2]
+
+                //prepare the statement
+                stmt, err := db.DB().Prepare(sqlStr)
+                if err != nil {
+                    panic(err)
+                }
+                _, err = stmt.Exec(vals...)
+                if err != nil {
+                    panic(err)
+                }
+                stmt.Close()
+
                 counter = 0
-                tx.Commit()
-                tx = db.Begin()
+                vals = []interface{}{}
+                buffer.Reset()
+                buffer.WriteString("INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, gender) VALUES ")
             }
         }
     }
-
     if err := scanner.Err(); err != nil {
         panic(err)
     }
 
-    tx.Commit()
+    if counter > 0 {
+        sqlStr := buffer.String()
+        //trim the last ,
+        sqlStr = sqlStr[0:len(sqlStr)-2]
+        //prepare the statement
+        stmt, err := db.DB().Prepare(sqlStr)
+        if err != nil {
+            panic(err)
+        }
+        _, err = stmt.Exec(vals...)
+        if err != nil {
+            panic(err)
+        }
+        stmt.Close()
+    }
+}
+
+func ensureVoterHistories(db *gorm.DB, service services.IVoterHistoryService) {
+    service.EnsureVoterHistoryTable()
+
+    file, err := os.Open("/data/entire_state_h.lst")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    var buffer bytes.Buffer
+    buffer.WriteString("INSERT INTO voter_histories(voter_id, election_code) VALUES ")
+    vals := []interface{}{}
+
+    counter := 0
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        line := scanner.Text()
+        voterId, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[0:13], " "), "0"), 0, 64)
+        code, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[25:38], " "), "0"), 0, 64)
+
+        if err != nil {
+            //panic(err)
+            //TODO Log
+        } else {
+            counter++
+            buffer.WriteString("(?, ?), ")
+            vals = append(
+                vals,
+                voterId,
+                code,
+            )
+
+            if counter > 3000 {
+                sqlStr := buffer.String()
+                //trim the last ,
+                sqlStr = sqlStr[0:len(sqlStr)-2]
+
+                //prepare the statement
+                stmt, err := db.DB().Prepare(sqlStr)
+                if err != nil {
+                    panic(err)
+                }
+                _, err = stmt.Exec(vals...)
+                if err != nil {
+                    panic(err)
+                }
+                stmt.Close()
+
+                counter = 0
+                vals = []interface{}{}
+                buffer.Reset()
+                buffer.WriteString("INSERT INTO voter_histories(voter_id, election_code) VALUES ")
+            }
+        }
+    }
+    if err := scanner.Err(); err != nil {
+        panic(err)
+    }
+
+    if counter > 0 {
+        sqlStr := buffer.String()
+        //trim the last ,
+        sqlStr = sqlStr[0:len(sqlStr)-2]
+        //prepare the statement
+        stmt, err := db.DB().Prepare(sqlStr)
+        if err != nil {
+            panic(err)
+        }
+        _, err = stmt.Exec(vals...)
+        if err != nil {
+            panic(err)
+        }
+        stmt.Close()
+    }
 }
 
 var ensureCmd = &cobra.Command{
@@ -190,6 +302,7 @@ var ensureCmd = &cobra.Command{
         jurisdictionService := services.NewJurisdictionService(db)
         electionService := services.NewElectionService(db)
         voterService := services.NewVoterService(db)
+        voterHistoryService := services.NewVoterHistoryService(db)
 
         //ensure db
         ensureSchools(schoolService)
@@ -197,6 +310,7 @@ var ensureCmd = &cobra.Command{
         ensureJurisdictions(jurisdictionService)
         ensureElections(electionService)
         ensureVoters(db, voterService)
+        ensureVoterHistories(db, voterHistoryService)
     },
 }
 
