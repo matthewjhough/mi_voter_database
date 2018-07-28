@@ -76,6 +76,12 @@
   version = "v1.8.0"
 
 [[projects]]
+  name = "github.com/metakeule/fmtdate"
+  packages = ["."]
+  revision = "1493d7e84f5de011ebbcfd054543e23717c5cb68"
+  version = "v1.1.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/mitchellh/go-homedir"
   packages = ["."]
@@ -172,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7e916f74e068b6bbe865d4e0b65dc824081e63c2a6a9d005dd9aea68d2eb587b"
+  inputs-digest = "7b6d5dd8446333124a760d56566549157cf1b4569fc4cf1b821af1cf5db54de2"
   solver-name = "gps-cdcl"
   solver-version = 1

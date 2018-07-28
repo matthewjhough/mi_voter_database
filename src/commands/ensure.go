@@ -7,6 +7,7 @@ import (
     "strconv"
     "strings"
 
+    "github.com/metakeule/fmtdate"
     "github.com/spf13/cobra"
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
@@ -27,12 +28,14 @@ func ensureSchools(service services.ISchoolDistrictService) {
     scanner := bufio.NewScanner(file)
     for scanner.Scan() {
         line := scanner.Text()
-        code, err := strconv.ParseUint(strings.TrimLeft(line[0:12], "0"), 0, 64)
+        countyCode, err := strconv.ParseUint(strings.TrimLeft(line[0:2], "0"), 0, 32)
+        jurisdictionCode, err := strconv.ParseUint(strings.TrimLeft(line[2:7], "0"), 0, 32)
+        code, err := strconv.ParseUint(strings.TrimLeft(line[7:12], "0"), 0, 32)
         if err != nil {
             panic(err)
         }
 
-        school := core.SchoolDistrict{Code: code, Name: line[12:]}
+        school := core.SchoolDistrict{CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), Code: uint(code), Name: line[12:]}
         schools = append(schools, school)
     }
 
@@ -41,6 +44,37 @@ func ensureSchools(service services.ISchoolDistrictService) {
     }
 
     service.EnsureSchoolDistricts(schools)
+}
+
+func ensureVillages(service services.IVillageService) {
+    villages := []core.Village{}
+
+    file, err := os.Open("/data/villagecd.lst")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        line := scanner.Text()
+        id, err := strconv.ParseUint(strings.TrimLeft(line[0:13], "0"), 0, 64)
+        countyCode, err := strconv.ParseUint(strings.TrimLeft(line[13:15], "0"), 0, 64)
+        jurisdictionCode, err := strconv.ParseUint(strings.TrimLeft(line[15:20], "0"), 0, 64)
+        code, err := strconv.ParseUint(strings.Trim(strings.TrimLeft(line[20:25], "0"), " "), 0, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        village := core.Village{Code: uint(code), CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), VillageId: id, Name: line[25:]}
+        villages = append(villages, village)
+    }
+
+    if err := scanner.Err(); err != nil {
+        panic(err)
+    }
+
+    service.EnsureVillages(villages)
 }
 
 func ensureCounties(service services.ICountyService) {
@@ -83,12 +117,13 @@ func ensureJurisdictions(service services.IJurisdictionService) {
     scanner := bufio.NewScanner(file)
     for scanner.Scan() {
         line := scanner.Text()
-        code, err := strconv.ParseUint(strings.TrimLeft(line[0:7], "0"), 0, 32)
+        countyCode, err := strconv.ParseUint(strings.TrimLeft(line[0:2], "0"), 0, 32)
+        code, err := strconv.ParseUint(strings.TrimLeft(line[2:7], "0"), 0, 32)
         if err != nil {
             panic(err)
         }
 
-        county := core.Jurisdiction{Code: uint(code), Name: line[7:]}
+        county := core.Jurisdiction{Code: uint(code), CountyCode: uint(countyCode), Name: line[7:]}
         counties = append(counties, county)
     }
 
@@ -112,11 +147,12 @@ func ensureElections(service services.IElectionService) {
     for scanner.Scan() {
         line := scanner.Text()
         code, err := strconv.ParseUint(strings.TrimLeft(strings.TrimLeft(line[0:13], " "), "0"), 0, 64)
+        date, err := fmtdate.Parse("MMDDYYYY", line[13:21])
         if err != nil {
             panic(err)
         }
 
-        election := core.Election{Code: code, Name: line[21:]}
+        election := core.Election{Code: code, Date: date, Name: line[21:]}
         elections = append(elections, election)
     }
 
@@ -299,15 +335,17 @@ var ensureCmd = &cobra.Command{
         //setup services
         schoolService := services.NewSchoolDistrictService(db)
         countyService := services.NewCountyService(db)
+        villageService := services.NewVillageService(db)
         jurisdictionService := services.NewJurisdictionService(db)
         electionService := services.NewElectionService(db)
         voterService := services.NewVoterService(db)
         voterHistoryService := services.NewVoterHistoryService(db)
 
         //ensure db
-        ensureSchools(schoolService)
         ensureCounties(countyService)
         ensureJurisdictions(jurisdictionService)
+        ensureSchools(schoolService)
+        ensureVillages(villageService)
         ensureElections(electionService)
         ensureVoters(db, voterService)
         ensureVoterHistories(db, voterHistoryService)

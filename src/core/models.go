@@ -1,16 +1,10 @@
 package core
 import (
+    "time"
+
     "github.com/jinzhu/gorm"
 )
 
-
-//School District
-type SchoolDistrict struct {
-    gorm.Model
-
-    Name string  `gorm:"size:255"`
-    Code uint64
-}
 
 //County
 type County struct {
@@ -26,6 +20,28 @@ type Jurisdiction struct {
 
     Name string  `gorm:"size:255"`
     Code uint
+    CountyCode uint
+}
+
+//School District
+type SchoolDistrict struct {
+    gorm.Model
+
+    Name string  `gorm:"size:255"`
+    Code uint
+    JurisdictionCode uint
+    CountyCode uint
+}
+
+//Village
+type Village struct {
+    gorm.Model
+
+    VillageId uint64
+    Name string  `gorm:"size:255"`
+    Code uint
+    JurisdictionCode uint
+    CountyCode uint
 }
 
 //Election
@@ -34,6 +50,7 @@ type Election struct {
 
     Name string  `gorm:"size:255"`
     Code uint64
+    Date time.Time
 }
 
 //Voter

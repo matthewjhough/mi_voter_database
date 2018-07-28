@@ -10,7 +10,7 @@ import (
 type ISchoolDistrictService interface {
     CreateSchoolDistrict(core.SchoolDistrict) core.SchoolDistrict
     UpdateSchoolDistrict(core.SchoolDistrict) core.SchoolDistrict
-    GetSchoolDistrict(uint64) (core.SchoolDistrict, error)
+    GetSchoolDistrict(uint) (core.SchoolDistrict, error)
     EnsureSchoolDistricts([]core.SchoolDistrict)
 }
 
@@ -28,7 +28,7 @@ func (p *SchoolDistrictService) UpdateSchoolDistrict(school core.SchoolDistrict)
     p.db.Save(&school)
     return school
 }
-func (p *SchoolDistrictService) GetSchoolDistrict(code uint64) (core.SchoolDistrict, error) {
+func (p *SchoolDistrictService) GetSchoolDistrict(code uint) (core.SchoolDistrict, error) {
     var school core.SchoolDistrict
     err := p.db.Where(&core.SchoolDistrict{Code: code}).First(&school).Error
     return school, err
