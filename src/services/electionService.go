@@ -35,6 +35,7 @@ func (p *ElectionService) GetElection(code uint64) (core.Election, error) {
 }
 func (p *ElectionService) EnsureElections(elections []core.Election) {
     p.db.AutoMigrate(&core.Election{})
+    p.db.Model(&core.Election{}).AddUniqueIndex("idx_election_code", "code")
 
     for _, election := range elections {
         existing, err := p.GetElection(election.Code)

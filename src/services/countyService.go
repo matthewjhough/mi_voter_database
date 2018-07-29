@@ -35,6 +35,7 @@ func (p *CountyService) GetCounty(code uint) (core.County, error) {
 }
 func (p *CountyService) EnsureCounties(counties []core.County) {
     p.db.AutoMigrate(&core.County{})
+    p.db.Model(&core.County{}).AddUniqueIndex("idx_county_code", "code")
 
     for _, county := range counties {
         existing, err := p.GetCounty(county.Code)

@@ -36,6 +36,11 @@ func (p *VoterHistoryService) GetVoterHistory(electionCode uint64) (core.VoterHi
 }
 func (p *VoterHistoryService) EnsureVoterHistoryTable() {
     p.db.AutoMigrate(&core.VoterHistory{})
+    p.db.Model(&core.VoterHistory{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.VoterHistory{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.VoterHistory{}).AddForeignKey("school_code", "school_districts(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.VoterHistory{}).AddForeignKey("election_code", "elections(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.VoterHistory{}).AddForeignKey("voter_id", "voter(voter_id)", "RESTRICT", "RESTRICT")
 }
 func (p *VoterHistoryService) EnsureVoterHistory(history core.VoterHistory) {
     existing, err := p.GetVoterHistory(history.ElectionCode)

@@ -35,6 +35,8 @@ func (p *JurisdictionService) GetJurisdiction(code uint) (core.Jurisdiction, err
 }
 func (p *JurisdictionService) EnsureJurisdictions(jurisdictions []core.Jurisdiction) {
     p.db.AutoMigrate(&core.Jurisdiction{})
+    p.db.Model(&core.Jurisdiction{}).AddUniqueIndex("idx_jurisdiction_code", "code")
+    p.db.Model(&core.Jurisdiction{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
 
     for _, jurisdiction := range jurisdictions {
         existing, err := p.GetJurisdiction(jurisdiction.Code)

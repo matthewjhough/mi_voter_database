@@ -35,6 +35,9 @@ func (p *VillageService) GetVillage(code uint) (core.Village, error) {
 }
 func (p *VillageService) EnsureVillages(villages []core.Village) {
     p.db.AutoMigrate(&core.Village{})
+    p.db.Model(&core.Village{}).AddUniqueIndex("idx_village_code", "code")
+    p.db.Model(&core.Village{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.Village{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
 
     for _, village := range villages {
         existing, err := p.GetVillage(village.Code)

@@ -36,6 +36,11 @@ func (p *VoterService) GetVoter(voterId uint64) (core.Voter, error) {
 }
 func (p *VoterService) EnsureVoterTable() {
     p.db.AutoMigrate(&core.Voter{})
+    p.db.Model(&core.Voter{}).AddUniqueIndex("idx_voter_voter_id", "voter_id")
+    p.db.Model(&core.Voter{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.Voter{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.Voter{}).AddForeignKey("school_code", "school_districts(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.Voter{}).AddForeignKey("village_code", "villages(code)", "RESTRICT", "RESTRICT")
 }
 func (p *VoterService) EnsureVoter(voter core.Voter) {
     existing, err := p.GetVoter(voter.VoterId)

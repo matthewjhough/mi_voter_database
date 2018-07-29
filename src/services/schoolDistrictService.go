@@ -35,6 +35,9 @@ func (p *SchoolDistrictService) GetSchoolDistrict(code uint) (core.SchoolDistric
 }
 func (p *SchoolDistrictService) EnsureSchoolDistricts(schools []core.SchoolDistrict) {
     p.db.AutoMigrate(&core.SchoolDistrict{})
+    p.db.Model(&core.SchoolDistrict{}).AddUniqueIndex("idx_school_district_code", "code")
+    p.db.Model(&core.SchoolDistrict{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.SchoolDistrict{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
 
     for _, school := range schools {
         existing, err := p.GetSchoolDistrict(school.Code)
