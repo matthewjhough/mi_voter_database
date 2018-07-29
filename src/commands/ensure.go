@@ -8,8 +8,9 @@ import (
     "strconv"
     "strings"
 
-    "github.com/metakeule/fmtdate"
     "github.com/spf13/cobra"
+    "github.com/spf13/viper"
+    "github.com/metakeule/fmtdate"
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
@@ -445,7 +446,7 @@ var ensureCmd = &cobra.Command{
     Long:  `ensures the database schema exists and has imported the voter data.`,
     Run: func(cmd *cobra.Command, args []string) {
         //setup db connection
-        db, err := gorm.Open("mysql", os.Getenv("APP_MYSQL_CONN_STR"))
+        db, err := gorm.Open("mysql", viper.GetString("mysql-connection-str"))
         if err != nil {
             panic(err)
         }

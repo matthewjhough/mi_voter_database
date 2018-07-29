@@ -13,7 +13,7 @@ var RootCmd = &cobra.Command{
     Use:   "cobra-example",
     Short: "An example of cobra",
     Long: `This application shows how to create modern CLI 
-applications in go using Cobra CLI library`,
+    applications in go using Cobra CLI library`,
     // Uncomment the following line if your bare application
     // has an action associated with it:
     //    Run: func(cmd *cobra.Command, args []string) { },
@@ -36,10 +36,12 @@ func init() {
 func initConfig() {
     viper.SetConfigType("yaml")
     viper.AddConfigPath("/etc/skaioskit/")
-    viper.SetConfigName("config.yaml")
+    viper.SetConfigName("config")
 
     // If a config file is found, read it in.
     if err := viper.ReadInConfig(); err == nil {
         fmt.Println("Using config file:", viper.ConfigFileUsed())
+    } else {
+        fmt.Println(err.Error())
     }
 }

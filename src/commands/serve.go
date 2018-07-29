@@ -1,10 +1,10 @@
 package commands
 
 import (
-    "os"
     "net/http"
 
     "github.com/spf13/cobra"
+    "github.com/spf13/viper"
     "github.com/gorilla/mux"
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
@@ -21,7 +21,7 @@ var serveCmd = &cobra.Command{
     Long:  `runs the rest api that exposes the voter / voter history data for other microservices to consume.`,
     Run: func(cmd *cobra.Command, args []string) {
         //setup db connection
-        db, err := gorm.Open("mysql", os.Getenv("APP_MYSQL_CONN_STR"))
+        db, err := gorm.Open("mysql", viper.GetString("mysql-connection-str"))
         if err != nil {
             panic(err)
         }
@@ -42,11 +42,11 @@ var serveCmd = &cobra.Command{
         r.HandleFunc("/voter", voterController.Logic)
 
         //wrap everything behind a jwt middleware
-        jwtMiddleware := skaioskit.JWTEnforceMiddleware([]byte(os.Getenv("APP_JWT_KEY")))
+        jwtMiddleware := skaioskit.JWTEnforceMiddleware([]byte(viper.GetString("jwt-key")))
         http.Handle("/", jwtMiddleware(r))
 
         //server up app
-        if err := http.ListenAndServe(":" + os.Getenv("APP_PORT_NUMBER"), nil); err != nil {
+        if err := http.ListenAndServe(":" + viper.GetString("port-number"), nil); err != nil {
             panic(err)
         }
     },
