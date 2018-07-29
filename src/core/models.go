@@ -65,7 +65,22 @@ type Voter struct {
     BirthYear string  `gorm:"size:4"`
     Gender string       `gorm:"size:3"`
     DateOfRegistration time.Time `gorm:"type:datetime"`
-    Address string       `gorm:"size:511"`
+    HouseNumberCharacter string       `gorm:"size:1"`
+    ResidenceStreetNumber string       `gorm:"size:7"`
+    HouseSuffix string       `gorm:"size:4"`
+    AddressPreDirection string       `gorm:"size:2"`
+    StreetName string       `gorm:"size:30"`
+    StreetType string       `gorm:"size:6"`
+    SuffixDirection string       `gorm:"size:2"`
+    ResidenceRxtension string       `gorm:"size:13"`
+    City string       `gorm:"size:35"`
+    State string       `gorm:"size:2"`
+    Zip string       `gorm:"size:5"`
+    MailAddress1 string       `gorm:"size:50"`
+    MailAddress2 string       `gorm:"size:50"`
+    MailAddress3 string       `gorm:"size:50"`
+    MailAddress4 string       `gorm:"size:50"`
+    MailAddress5 string       `gorm:"size:50"`
     VoterId uint64
     CountyCode uint
     JurisdictionCode uint

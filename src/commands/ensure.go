@@ -173,7 +173,7 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
     }
     defer file.Close()
 
-    insertClause := "INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, birth_year, gender, date_of_registration, address, county_code, jurisdiction_code, ward, school_code, state_house, state_senate, us_congress, county_commissioner, village_code, village_precinct, school_precinct, permanent_absentee_ind, status_type, uocava_status) VALUES "
+    insertClause := "INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, birth_year, gender, date_of_registration, house_number_character, residence_street_number, house_suffix, address_pre_direction, street_name, street_type, suffix_direction, residence_rxtension, city, state, zip, mail_address1, mail_address2, mail_address3, mail_address4, mail_address5, county_code, jurisdiction_code, ward, school_code, state_house, state_senate, us_congress, county_commissioner, village_code, village_precinct, school_precinct, permanent_absentee_ind, status_type, uocava_status) VALUES "
     var buffer bytes.Buffer
     buffer.WriteString(insertClause)
     vals := []interface{}{}
@@ -248,7 +248,7 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
         }
 
         counter++
-        buffer.WriteString("(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), ")
+        buffer.WriteString("(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), ")
         vals = append(
             vals,
             voterId, //VoterId: 
@@ -259,7 +259,22 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
             strings.Trim(line[78:82], " "),  //BirthYear: 
             strings.Trim(line[82:83], " "),  //Gender:
             dateOfReg.Format("2006-01-02 15:04:05"),
-            strings.Trim(line[91:448], " "),  //Address:
+            strings.Trim(line[91:92], " "),  //house_number_character
+            strings.Trim(line[92:99], " "),  //residence_street_number
+            strings.Trim(line[99:103], " "),  //house_suffix
+            strings.Trim(line[103:105], " "),  //address_pre_direction
+            strings.Trim(line[105:135], " "),  //street_name
+            strings.Trim(line[135:141], " "),  //street_type
+            strings.Trim(line[141:143], " "),  //suffix_direction
+            strings.Trim(line[143:156], " "),  //residence_rxtension
+            strings.Trim(line[156:191], " "),  //City:
+            strings.Trim(line[191:193], " "),  //State:
+            strings.Trim(line[193:198], " "),  //Zip:
+            strings.Trim(line[198:248], " "),  //Address 1:
+            strings.Trim(line[248:298], " "),  //Address 2:
+            strings.Trim(line[298:348], " "),  //Address 3:
+            strings.Trim(line[348:398], " "),  //Address 4:
+            strings.Trim(line[398:448], " "),  //Address 5:
             uint(countyCode),
             uint(jurisdictionCode),
             strings.Trim(line[468:474], " "), //Ward:
@@ -276,7 +291,7 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
             strings.Trim(line[519:520], " "), //UOCAVAStatus
         )
 
-        if counter > 2000 {
+        if counter > 1500 {
             sqlStr := buffer.String()
             //trim the last ,
             sqlStr = sqlStr[0:len(sqlStr)-2]
