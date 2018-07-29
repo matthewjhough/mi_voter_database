@@ -10,6 +10,7 @@ import (
 type IVoterService interface {
     CreateVoter(core.Voter) core.Voter
     UpdateVoter(core.Voter) core.Voter
+    GetVoters() ([]core.Voter, error)
     GetVoter(uint64) (core.Voter, error)
     EnsureVoterTable()
     EnsureVoter(core.Voter)
@@ -28,6 +29,11 @@ func (p *VoterService) CreateVoter(voter core.Voter) core.Voter {
 func (p *VoterService) UpdateVoter(voter core.Voter) core.Voter {
     p.db.Save(&voter)
     return voter
+}
+func (p *VoterService) GetVoters() ([]core.Voter, error) {
+    var voters []core.Voter
+    err := p.db.Limit(10).Find(&voters).Error
+    return voters, err
 }
 func (p *VoterService) GetVoter(voterId uint64) (core.Voter, error) {
     var voter core.Voter

@@ -17,4 +17,4 @@
 src/voter
 src/vendor
 src/vendor.orig
-start.sh
+config/config.yaml
