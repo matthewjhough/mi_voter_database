@@ -35,10 +35,12 @@ var serveCmd = &cobra.Command{
         voterService := services.NewVoterService(db)
 
         //build controllers
+        aboutController := skaioskit.NewControllerProcessor(controllers.NewAboutController())
         voterController := skaioskit.NewControllerProcessor(controllers.NewVoterController(voterService))
 
         //setup routing to controllers
         r := mux.NewRouter()
+        r.HandleFunc("/about", aboutController.Logic)
         r.HandleFunc("/voter", voterController.Logic)
 
         //wrap everything behind a jwt middleware

@@ -9,7 +9,6 @@ import (
     "skaioskit/services"
 )
 
-//Form Controller
 type VoterController struct {
     voterService services.IVoterService
 }
@@ -19,7 +18,7 @@ func NewVoterController(voterService services.IVoterService) *VoterController {
     }
 }
 func (p *VoterController) Get(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
-    voters, err := p.voterService.GetVoters()
+    voters, err := p.voterService.GetVoters(core.QueryRequest{})
     if err == nil {
         return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetVotersResponse{Voters: voters}}
     } else {
