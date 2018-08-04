@@ -1,4 +1,4 @@
-.PHONY: setup init build clean pack upload deploy run ensure serve stop
+.PHONY: setup init build clean pack upload deploy ensure stop
 
 DIR := ${CURDIR}
 
