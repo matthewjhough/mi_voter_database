@@ -41,6 +41,7 @@ func (p *VoterHistoryService) EnsureVoterHistoryTable() {
     p.db.Model(&core.VoterHistory{}).AddForeignKey("school_code", "school_districts(code)", "RESTRICT", "RESTRICT")
     p.db.Model(&core.VoterHistory{}).AddForeignKey("election_code", "elections(code)", "RESTRICT", "RESTRICT")
     p.db.Model(&core.VoterHistory{}).AddForeignKey("voter_id", "voter(voter_id)", "RESTRICT", "RESTRICT")
+    p.db.Model(&core.VoterHistory{}).AddUniqueIndex("idx_voter_history_voter_id_election_code", "voter_id", "election_code")
 }
 func (p *VoterHistoryService) EnsureVoterHistory(history core.VoterHistory) {
     existing, err := p.GetVoterHistory(history.ElectionCode)

@@ -157,3 +157,16 @@ spec:
     port: 80
     targetPort: 80
 ---
+kind: Service
+apiVersion: v1
+metadata:
+  name: voter-service-mysql
+spec:
+  type: LoadBalancer
+  selector:
+    app: voter-service-mysql
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306
+---

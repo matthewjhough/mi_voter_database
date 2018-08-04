@@ -174,6 +174,7 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
     }
     defer file.Close()
 
+    onDuplicateClause := " ON DUPLICATE KEY UPDATE last_name=VALUES(last_name), first_name=VALUES(first_name)"
     insertClause := "INSERT INTO voters(voter_id, last_name, first_name, middle_name, name_suffix, birth_year, gender, date_of_registration, house_number_character, residence_street_number, house_suffix, address_pre_direction, street_name, street_type, suffix_direction, residence_rxtension, city, state, zip, mail_address1, mail_address2, mail_address3, mail_address4, mail_address5, county_code, jurisdiction_code, ward, school_code, state_house, state_senate, us_congress, county_commissioner, village_code, village_precinct, school_precinct, permanent_absentee_ind, status_type, uocava_status) VALUES "
     var buffer bytes.Buffer
     buffer.WriteString(insertClause)
@@ -298,7 +299,7 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
             sqlStr = sqlStr[0:len(sqlStr)-2]
 
             //prepare the statement
-            stmt, err := db.DB().Prepare(sqlStr)
+            stmt, err := db.DB().Prepare(sqlStr + onDuplicateClause)
             if err != nil {
                 panic(err)
             }
@@ -323,7 +324,7 @@ func ensureVoters(db *gorm.DB, service services.IVoterService) {
         //trim the last ,
         sqlStr = sqlStr[0:len(sqlStr)-2]
         //prepare the statement
-        stmt, err := db.DB().Prepare(sqlStr)
+        stmt, err := db.DB().Prepare(sqlStr + onDuplicateClause)
         if err != nil {
             panic(err)
         }
@@ -344,8 +345,9 @@ func ensureVoterHistories(db *gorm.DB, service services.IVoterHistoryService) {
     }
     defer file.Close()
 
-    var buffer bytes.Buffer
+    onDuplicateClause := " ON DUPLICATE KEY UPDATE county_code=VALUES(county_code), jurisdiction_code=VALUES(jurisdiction_code), school_code=VALUES(school_code), absentee_ind=VALUES(absentee_ind)"
     insertSqlClause := "INSERT INTO voter_histories(voter_id, election_code, county_code, jurisdiction_code, school_code, absentee_ind) VALUES "
+    var buffer bytes.Buffer
     buffer.WriteString(insertSqlClause)
     vals := []interface{}{}
 
@@ -403,7 +405,7 @@ func ensureVoterHistories(db *gorm.DB, service services.IVoterHistoryService) {
             sqlStr = sqlStr[0:len(sqlStr)-2]
 
             //prepare the statement
-            stmt, err := db.DB().Prepare(sqlStr)
+            stmt, err := db.DB().Prepare(sqlStr + onDuplicateClause)
             if err != nil {
                 panic(err)
             }
@@ -428,7 +430,7 @@ func ensureVoterHistories(db *gorm.DB, service services.IVoterHistoryService) {
         //trim the last ,
         sqlStr = sqlStr[0:len(sqlStr)-2]
         //prepare the statement
-        stmt, err := db.DB().Prepare(sqlStr)
+        stmt, err := db.DB().Prepare(sqlStr + onDuplicateClause)
         if err != nil {
             panic(err)
         }
