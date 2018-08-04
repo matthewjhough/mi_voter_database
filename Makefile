@@ -24,14 +24,8 @@ upload:
 deploy:
 	envsubst < deployment.yaml | kubectl apply -f -
 
-run:
-	docker run -it -v ${DIR}/config:/etc/skaioskit -v ${DIR}/data:/data -p 8081:80 localhost:5000/skaioskit/voter-service /voter
-
 ensure:
-	docker run -it -v ${DIR}/config:/etc/skaioskit -v ${DIR}/data:/data -p 8081:80 localhost:5000/skaioskit/voter-service /voter ensure
-
-serve:
-	docker run -it -v ${DIR}/config:/etc/skaioskit -v ${DIR}/data:/data -p 8081:80 localhost:5000/skaioskit/voter-service /voter serve
+	kubectl create job --from=cronjob/voter-service-ensure-cronjob voter-service-ensure-cronjob-job
 
 stop:
-	kubectl delete deployments,services,pods,pvc,cronjob --all
+	kubectl delete deployments,services,pods,pvc,cronjob,job --all

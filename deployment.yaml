@@ -105,20 +105,26 @@ spec:
         - serve
         ports:
           - containerPort: 80
-        volumeMounts:
-        - name: voter-data-dir
-          mountPath: /data
-      volumes:
-      - name: voter-data-dir
-        hostPath:
-          path: /Users/nathanmentley/Projects/skaioskit/mi_voter_database/data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: voter-service-data-pv-claim
+  labels:
+    app: voter-service
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
 ---
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: voter-service-ensure-cronjob
 spec:
-  schedule: "10 * * * *"
+  schedule: "0 0 * * *"
   jobTemplate:
     spec:
       template:
@@ -134,8 +140,8 @@ spec:
               mountPath: /data
           volumes:
           - name: voter-data-dir
-            hostPath:
-              path: /Users/nathanmentley/Projects/skaioskit/mi_voter_database/data
+            persistentVolumeClaim:
+              claimName: voter-service-data-pv-claim
           restartPolicy: OnFailure
 ---
 kind: Service
