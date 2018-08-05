@@ -2,6 +2,8 @@
 
 This is a simple containerized microservice written in go that will build a database of Michigan registered voters and their voting history and expose that data over a simple rest api for consumption by other microservices or any client you want to setup.
 
+* Warning: * This readme is out of date. I'll clean it up once things stablize the code which should hopefully be over the next few days.
+
 # Requirements
 
 The go app is setup to be compiled inside a docker container and run from there. The project also includes a simple makefile to make the process easier.
