@@ -100,6 +100,7 @@ spec:
       containers:
       - name: voter-service
         image: localhost:5000/skaioskit/voter-service:latest
+        imagePullPolicy: Always
         command: 
         - /voter
         - serve
@@ -132,6 +133,7 @@ spec:
           containers:
           - name: voter-service-ensure
             image: localhost:5000/skaioskit/voter-service:latest
+            imagePullPolicy: Always
             command: 
             - /voter
             - ensure
@@ -156,17 +158,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: voter-service-mysql
-spec:
-  type: LoadBalancer
-  selector:
-    app: voter-service-mysql
-  ports:
-  - protocol: TCP
-    port: 3306
-    targetPort: 3306
 ---

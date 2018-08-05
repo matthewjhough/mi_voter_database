@@ -12,6 +12,7 @@ type IVoterService interface {
     UpdateVoter(core.Voter) core.Voter
     GetVoters(core.QueryRequest) ([]core.Voter, error)
     GetVoter(uint64) (core.Voter, error)
+    GetVoterCount() uint64
     EnsureVoterTable()
     EnsureVoter(core.Voter)
 }
@@ -39,6 +40,11 @@ func (p *VoterService) GetVoter(voterId uint64) (core.Voter, error) {
     var voter core.Voter
     err := p.db.Where(&core.Voter{VoterId: voterId}).First(&voter).Error
     return voter, err
+}
+func (p *VoterService) GetVoterCount() uint64 {
+    var count uint64
+    p.db.Model(&core.Voter{}).Count(&count)
+    return count
 }
 func (p *VoterService) EnsureVoterTable() {
     p.db.AutoMigrate(&core.Voter{})

@@ -33,15 +33,18 @@ var serveCmd = &cobra.Command{
         //jurisdictionService := services.NewJurisdictionService(db)
         //electionService := services.NewElectionService(db)
         voterService := services.NewVoterService(db)
+        voterHistoryService := services.NewVoterHistoryService(db)
 
         //build controllers
         aboutController := skaioskit.NewControllerProcessor(controllers.NewAboutController())
         voterController := skaioskit.NewControllerProcessor(controllers.NewVoterController(voterService))
+        voterHistoryController := skaioskit.NewControllerProcessor(controllers.NewVoterHistoryController(voterHistoryService))
 
         //setup routing to controllers
         r := mux.NewRouter()
         r.HandleFunc("/about", aboutController.Logic)
         r.HandleFunc("/voter", voterController.Logic)
+        r.HandleFunc("/voterHistory", voterHistoryController.Logic)
 
         //wrap everything behind a jwt middleware
         jwtMiddleware := skaioskit.JWTEnforceMiddleware([]byte(viper.GetString("jwt-key")))

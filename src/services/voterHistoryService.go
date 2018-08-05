@@ -11,6 +11,7 @@ type IVoterHistoryService interface {
     CreateVoterHistory(core.VoterHistory) core.VoterHistory
     UpdateVoterHistory(core.VoterHistory) core.VoterHistory
     GetVoterHistory(uint64) (core.VoterHistory, error)
+    GetVoterHistoryCount() uint64
     EnsureVoterHistoryTable()
     EnsureVoterHistory(core.VoterHistory)
 }
@@ -33,6 +34,11 @@ func (p *VoterHistoryService) GetVoterHistory(electionCode uint64) (core.VoterHi
     var history core.VoterHistory
     err := p.db.Where(&core.VoterHistory{ElectionCode: electionCode}).First(&history).Error
     return history, err
+}
+func (p *VoterHistoryService) GetVoterHistoryCount() uint64 {
+    var count uint64
+    p.db.Model(&core.VoterHistory{}).Count(&count)
+    return count
 }
 func (p *VoterHistoryService) EnsureVoterHistoryTable() {
     p.db.AutoMigrate(&core.VoterHistory{})

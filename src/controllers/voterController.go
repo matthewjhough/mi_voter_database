@@ -29,7 +29,8 @@ func (p *VoterController) Post(w http.ResponseWriter, r *http.Request) skaioskit
     return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
 }
 func (p *VoterController) Put(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
-    return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
+    count := p.voterService.GetVoterCount()
+    return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetVoterCount{Count: count}}
 }
 func (p *VoterController) Delete(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
     return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
