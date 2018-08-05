@@ -51,11 +51,11 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           value: password
         - name: MYSQL_USER
-          value: pettracker
+          value: skaioskit
         - name: MYSQL_PASSWORD
           value: password
         - name: MYSQL_DATABASE
-          value: auth
+          value: voter
           # TODO: use secrets
           #  valueFrom:
           #    secretKeyRef:
