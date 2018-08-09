@@ -14,12 +14,12 @@ type GetVoterHistoryCount struct {
 
 type GetAboutResponse struct {
     Version string
+    BuildTime string
 }
 
 type QueryFilter struct {
     Field string
     Value string
-    Operator string
 }
 
 type QueryRequest struct {

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+    "encoding/json"
     "net/http"
 
     skaioskit "github.com/nathanmentley/skaioskit-go-core"
@@ -18,11 +19,14 @@ func NewVoterController(voterService services.IVoterService) *VoterController {
     }
 }
 func (p *VoterController) Get(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
-    first := r.URL.Query().Get("first")
-    last := r.URL.Query().Get("last")
+    queryStr := r.URL.Query().Get("query")
+    query := core.QueryRequest{}
+    err := json.Unmarshal([]byte(queryStr), &query)
+    if err != nil {
+        return skaioskit.ControllerResponse{Status: http.StatusBadRequest, Body: skaioskit.EmptyResponse{}}
+    }
 
-    //voters, err := p.voterService.GetVoters(core.QueryRequest{})
-    voters, err := p.voterService.GetVotersByName(first, last)
+    voters, err := p.voterService.GetVoters(query)
     if err == nil {
         return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetVotersResponse{Voters: voters}}
     } else {

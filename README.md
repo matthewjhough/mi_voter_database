@@ -46,3 +46,8 @@ However it's probably easier to run
 make ensure;make serve
 
 the first command will ensure the database schema is setup and the data files are imported. The second command will spin up the api.
+
+
+# Example Request
+
+localhost/voter?query={"Limit":2,"Offset":0,"Filters":[{"Field":"FirstName","Value":"NATHAN"},{"Field":"LastName","Value":"MENTLEY"}]}

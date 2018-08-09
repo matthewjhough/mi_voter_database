@@ -1,6 +1,7 @@
 package controllers
 
 import (
+    "os"
     "net/http"
 
     skaioskit "github.com/nathanmentley/skaioskit-go-core"
@@ -16,6 +17,7 @@ func NewAboutController() *AboutController {
 func (p *AboutController) Get(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
     return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetAboutResponse{
         Version: core.SERVICE_VERSION,
+        BuildTime: os.Getenv("BUILD_DATETIME"),
     }}
 }
 func (p *AboutController) Post(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
