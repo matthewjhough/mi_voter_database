@@ -5,7 +5,6 @@ import (
 
     skaioskit "github.com/nathanmentley/skaioskit-go-core"
 
-    "skaioskit/core"
     "skaioskit/services"
 )
 
@@ -24,8 +23,7 @@ func (p *VoterHistoryController) Post(w http.ResponseWriter, r *http.Request) sk
     return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
 }
 func (p *VoterHistoryController) Put(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
-    count := p.voterHistoryService.GetVoterHistoryCount()
-    return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetVoterHistoryCount{Count: count}}
+    return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
 }
 func (p *VoterHistoryController) Delete(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
     return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}

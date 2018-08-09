@@ -4,14 +4,14 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    "skaioskit/models"
 )
 
 type ICountyService interface {
-    CreateCounty(core.County) core.County
-    UpdateCounty(core.County) core.County
-    GetCounty(uint) (core.County, error)
-    EnsureCounties([]core.County)
+    CreateCounty(models.County) models.County
+    UpdateCounty(models.County) models.County
+    GetCounty(uint) (models.County, error)
+    EnsureCounties([]models.County)
 }
 
 type CountyService struct {
@@ -20,22 +20,22 @@ type CountyService struct {
 func NewCountyService(db *gorm.DB) *CountyService {
     return &CountyService{db: db}
 }
-func (p *CountyService) CreateCounty(county core.County) core.County {
+func (p *CountyService) CreateCounty(county models.County) models.County {
     p.db.Create(&county)
     return county
 }
-func (p *CountyService) UpdateCounty(county core.County) core.County {
+func (p *CountyService) UpdateCounty(county models.County) models.County {
     p.db.Save(&county)
     return county
 }
-func (p *CountyService) GetCounty(code uint) (core.County, error) {
-    var county core.County
-    err := p.db.Where(&core.County{Code: code}).First(&county).Error
+func (p *CountyService) GetCounty(code uint) (models.County, error) {
+    var county models.County
+    err := p.db.Where(&models.County{Code: code}).First(&county).Error
     return county, err
 }
-func (p *CountyService) EnsureCounties(counties []core.County) {
-    p.db.AutoMigrate(&core.County{})
-    p.db.Model(&core.County{}).AddUniqueIndex("idx_county_code", "code")
+func (p *CountyService) EnsureCounties(counties []models.County) {
+    p.db.AutoMigrate(&models.County{})
+    p.db.Model(&models.County{}).AddUniqueIndex("idx_county_code", "code")
 
     for _, county := range counties {
         existing, err := p.GetCounty(county.Code)

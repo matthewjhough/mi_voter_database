@@ -4,14 +4,14 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    "skaioskit/models"
 )
 
 type ISchoolDistrictService interface {
-    CreateSchoolDistrict(core.SchoolDistrict) core.SchoolDistrict
-    UpdateSchoolDistrict(core.SchoolDistrict) core.SchoolDistrict
-    GetSchoolDistrict(uint) (core.SchoolDistrict, error)
-    EnsureSchoolDistricts([]core.SchoolDistrict)
+    CreateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
+    UpdateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
+    GetSchoolDistrict(uint) (models.SchoolDistrict, error)
+    EnsureSchoolDistricts([]models.SchoolDistrict)
 }
 
 type SchoolDistrictService struct {
@@ -20,24 +20,24 @@ type SchoolDistrictService struct {
 func NewSchoolDistrictService(db *gorm.DB) *SchoolDistrictService {
     return &SchoolDistrictService{db: db}
 }
-func (p *SchoolDistrictService) CreateSchoolDistrict(school core.SchoolDistrict) core.SchoolDistrict {
+func (p *SchoolDistrictService) CreateSchoolDistrict(school models.SchoolDistrict) models.SchoolDistrict {
     p.db.Create(&school)
     return school
 }
-func (p *SchoolDistrictService) UpdateSchoolDistrict(school core.SchoolDistrict) core.SchoolDistrict {
+func (p *SchoolDistrictService) UpdateSchoolDistrict(school models.SchoolDistrict) models.SchoolDistrict {
     p.db.Save(&school)
     return school
 }
-func (p *SchoolDistrictService) GetSchoolDistrict(code uint) (core.SchoolDistrict, error) {
-    var school core.SchoolDistrict
-    err := p.db.Where(&core.SchoolDistrict{Code: code}).First(&school).Error
+func (p *SchoolDistrictService) GetSchoolDistrict(code uint) (models.SchoolDistrict, error) {
+    var school models.SchoolDistrict
+    err := p.db.Where(&models.SchoolDistrict{Code: code}).First(&school).Error
     return school, err
 }
-func (p *SchoolDistrictService) EnsureSchoolDistricts(schools []core.SchoolDistrict) {
-    p.db.AutoMigrate(&core.SchoolDistrict{})
-    p.db.Model(&core.SchoolDistrict{}).AddUniqueIndex("idx_school_district_code", "code")
-    p.db.Model(&core.SchoolDistrict{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
-    p.db.Model(&core.SchoolDistrict{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
+func (p *SchoolDistrictService) EnsureSchoolDistricts(schools []models.SchoolDistrict) {
+    p.db.AutoMigrate(&models.SchoolDistrict{})
+    p.db.Model(&models.SchoolDistrict{}).AddUniqueIndex("idx_school_district_code", "code")
+    p.db.Model(&models.SchoolDistrict{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&models.SchoolDistrict{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
 
     for _, school := range schools {
         existing, err := p.GetSchoolDistrict(school.Code)

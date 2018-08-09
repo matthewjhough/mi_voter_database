@@ -11,7 +11,7 @@ import (
     "github.com/metakeule/fmtdate"
     "github.com/jinzhu/gorm"
 
-    "skaioskit/core"
+    "skaioskit/models"
     "skaioskit/services"
 )
 
@@ -22,7 +22,7 @@ func NewMichiganByteWidthDataProvider(db *gorm.DB) *MichiganByteWidthDataProvide
     return &MichiganByteWidthDataProvider{db: db}
 }
 func (p *MichiganByteWidthDataProvider) EnsureCounties(service services.ICountyService) {
-    counties := []core.County{}
+    counties := []models.County{}
 
     file, err := os.Open("/data/countycd.lst")
     if err != nil {
@@ -38,7 +38,7 @@ func (p *MichiganByteWidthDataProvider) EnsureCounties(service services.ICountyS
             panic(err)
         }
 
-        county := core.County{Code: uint(code), Name: line[2:]}
+        county := models.County{Code: uint(code), Name: line[2:]}
         counties = append(counties, county)
     }
 
@@ -49,7 +49,7 @@ func (p *MichiganByteWidthDataProvider) EnsureCounties(service services.ICountyS
     service.EnsureCounties(counties)
 }
 func (p *MichiganByteWidthDataProvider) EnsureJurisdictions(service services.IJurisdictionService) {
-    counties := []core.Jurisdiction{}
+    counties := []models.Jurisdiction{}
 
     file, err := os.Open("/data/jurisdcd.lst")
     if err != nil {
@@ -66,7 +66,7 @@ func (p *MichiganByteWidthDataProvider) EnsureJurisdictions(service services.IJu
             panic(err)
         }
 
-        county := core.Jurisdiction{Code: uint(code), CountyCode: uint(countyCode), Name: line[7:]}
+        county := models.Jurisdiction{Code: uint(code), CountyCode: uint(countyCode), Name: line[7:]}
         counties = append(counties, county)
     }
 
@@ -77,7 +77,7 @@ func (p *MichiganByteWidthDataProvider) EnsureJurisdictions(service services.IJu
     service.EnsureJurisdictions(counties)
 }
 func (p *MichiganByteWidthDataProvider) EnsureSchools(service services.ISchoolDistrictService) {
-    schools := []core.SchoolDistrict{}
+    schools := []models.SchoolDistrict{}
 
     file, err := os.Open("/data/schoolcd.lst")
     if err != nil {
@@ -95,7 +95,7 @@ func (p *MichiganByteWidthDataProvider) EnsureSchools(service services.ISchoolDi
             panic(err)
         }
 
-        school := core.SchoolDistrict{CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), Code: uint(code), Name: line[12:]}
+        school := models.SchoolDistrict{CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), Code: uint(code), Name: line[12:]}
         schools = append(schools, school)
     }
 
@@ -106,7 +106,7 @@ func (p *MichiganByteWidthDataProvider) EnsureSchools(service services.ISchoolDi
     service.EnsureSchoolDistricts(schools)
 }
 func (p *MichiganByteWidthDataProvider) EnsureVillages(service services.IVillageService) {
-    villages := []core.Village{}
+    villages := []models.Village{}
 
     file, err := os.Open("/data/villagecd.lst")
     if err != nil {
@@ -125,7 +125,7 @@ func (p *MichiganByteWidthDataProvider) EnsureVillages(service services.IVillage
             panic(err)
         }
 
-        village := core.Village{Code: uint(code), CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), VillageId: id, Name: line[25:]}
+        village := models.Village{Code: uint(code), CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), VillageId: id, Name: line[25:]}
         villages = append(villages, village)
     }
 
@@ -136,7 +136,7 @@ func (p *MichiganByteWidthDataProvider) EnsureVillages(service services.IVillage
     service.EnsureVillages(villages)
 }
 func (p *MichiganByteWidthDataProvider) EnsureElections(service services.IElectionService) {
-    elections := []core.Election{}
+    elections := []models.Election{}
 
     file, err := os.Open("/data/electionscd.lst")
     if err != nil {
@@ -153,7 +153,7 @@ func (p *MichiganByteWidthDataProvider) EnsureElections(service services.IElecti
             panic(err)
         }
 
-        election := core.Election{Code: code, Date: date, Name: line[21:]}
+        election := models.Election{Code: code, Date: date, Name: line[21:]}
         elections = append(elections, election)
     }
 

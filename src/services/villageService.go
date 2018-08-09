@@ -4,14 +4,14 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    "skaioskit/models"
 )
 
 type IVillageService interface {
-    CreateVillage(core.Village) core.Village
-    UpdateVillage(core.Village) core.Village
-    GetVillage(uint) (core.Village, error)
-    EnsureVillages([]core.Village)
+    CreateVillage(models.Village) models.Village
+    UpdateVillage(models.Village) models.Village
+    GetVillage(uint) (models.Village, error)
+    EnsureVillages([]models.Village)
 }
 
 type VillageService struct {
@@ -20,24 +20,24 @@ type VillageService struct {
 func NewVillageService(db *gorm.DB) *VillageService {
     return &VillageService{db: db}
 }
-func (p *VillageService) CreateVillage(village core.Village) core.Village {
+func (p *VillageService) CreateVillage(village models.Village) models.Village {
     p.db.Create(&village)
     return village
 }
-func (p *VillageService) UpdateVillage(village core.Village) core.Village {
+func (p *VillageService) UpdateVillage(village models.Village) models.Village {
     p.db.Save(&village)
     return village
 }
-func (p *VillageService) GetVillage(code uint) (core.Village, error) {
-    var village core.Village
-    err := p.db.Where(&core.Village{Code: code}).First(&village).Error
+func (p *VillageService) GetVillage(code uint) (models.Village, error) {
+    var village models.Village
+    err := p.db.Where(&models.Village{Code: code}).First(&village).Error
     return village, err
 }
-func (p *VillageService) EnsureVillages(villages []core.Village) {
-    p.db.AutoMigrate(&core.Village{})
-    p.db.Model(&core.Village{}).AddUniqueIndex("idx_village_code", "code")
-    p.db.Model(&core.Village{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
-    p.db.Model(&core.Village{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
+func (p *VillageService) EnsureVillages(villages []models.Village) {
+    p.db.AutoMigrate(&models.Village{})
+    p.db.Model(&models.Village{}).AddUniqueIndex("idx_village_code", "code")
+    p.db.Model(&models.Village{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
+    p.db.Model(&models.Village{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
 
     for _, village := range villages {
         existing, err := p.GetVillage(village.Code)

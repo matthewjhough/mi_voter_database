@@ -30,7 +30,7 @@ func (p *VoterController) Get(w http.ResponseWriter, r *http.Request) skaioskit.
     voters, err := p.voterService.GetVoters(query)
 
     if err == nil {
-        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetVotersResponse{Voters: voters}}
+        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetVotersResponse{Voters: voters}}
     } else {
         return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
     }
@@ -39,8 +39,7 @@ func (p *VoterController) Post(w http.ResponseWriter, r *http.Request) skaioskit
     return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
 }
 func (p *VoterController) Put(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
-    count := p.voterService.GetVoterCount()
-    return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetVoterCount{Count: count}}
+    return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
 }
 func (p *VoterController) Delete(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
     return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
