@@ -54,5 +54,5 @@ type Voter struct {
     StatusType string        `gorm:"size:2"`
     UOCAVAStatus string        `gorm:"size:1"`
 
-    VoterHistories []VoterHistory   `gorm:"foreignkey:VoterId"`
+    VoterHistories []VoterHistory   `gorm:"foreignkey:VoterId;association_foreignkey:VoterId"`
 }
