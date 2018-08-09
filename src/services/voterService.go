@@ -1,8 +1,6 @@
 package services
 
 import (
-    "reflect"
-
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
@@ -37,16 +35,7 @@ func (p *VoterService) GetVoters(query core.QueryRequest) ([]core.Voter, error) 
     var voters []core.Voter
     voter := core.Voter{}
 
-    for _, filter := range query.Filters {
-        field := reflect.ValueOf(&voter).Elem().FieldByName(filter.Field)
-        if field.IsValid() {
-            field.SetString(filter.Value)
-        } else {
-            panic("Unknown Field: " + filter.Field)
-        }
-    }
-
-    err := p.db.Limit(query.Limit).Offset(query.Offset).Where(&voter).Find(&voters).Error
+    err := core.BuildQuery(p.db, query, &voter).Find(&voters).Error
     return voters, err
 }
 func (p *VoterService) GetVoter(voterId uint64) (core.Voter, error) {
