@@ -11,6 +11,7 @@ type IVoterService interface {
     CreateVoter(core.Voter) core.Voter
     UpdateVoter(core.Voter) core.Voter
     GetVoters(core.QueryRequest) ([]core.Voter, error)
+    GetVotersByName(string, string) ([]core.Voter, error)
     GetVoter(uint64) (core.Voter, error)
     GetVoterCount() uint64
     EnsureVoterTable()
@@ -34,6 +35,11 @@ func (p *VoterService) UpdateVoter(voter core.Voter) core.Voter {
 func (p *VoterService) GetVoters(query core.QueryRequest) ([]core.Voter, error) {
     var voters []core.Voter
     err := p.db.Limit(10).Find(&voters).Error
+    return voters, err
+}
+func (p *VoterService) GetVotersByName(first string, last string) ([]core.Voter, error) {
+    var voters []core.Voter
+    err := p.db.Where(&core.Voter{FirstName: first, LastName: last}).Limit(10).Find(&voters).Error
     return voters, err
 }
 func (p *VoterService) GetVoter(voterId uint64) (core.Voter, error) {

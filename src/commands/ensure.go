@@ -1,6 +1,7 @@
 package commands
 
 import (
+    "go.pedge.io/inject"
     "github.com/spf13/cobra"
     "github.com/spf13/viper"
     "github.com/jinzhu/gorm"
@@ -21,6 +22,9 @@ var ensureCmd = &cobra.Command{
             panic(err)
         }
         defer db.Close()
+
+        module := inject.NewModule()
+        module.BindInterface((*services.ISchoolDistrictService)(nil)).ToConstructor(services.NewSchoolDistrictService);
 
         //setup services
         schoolService := services.NewSchoolDistrictService(db)

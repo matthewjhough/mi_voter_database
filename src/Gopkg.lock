@@ -140,6 +140,12 @@
 
 [[projects]]
   branch = "master"
+  name = "go.pedge.io/inject"
+  packages = ["."]
+  revision = "cd3b6797dc874dbafdefe4e2379c2e26b51ea099"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "0ffbfd41fbef8ffcf9b62b0b0aa3a5873ed7a4fe"
@@ -172,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b16d229ce7b6efbdfdc73882435e8d9abea04363f04e093214f7ea54ed472092"
+  inputs-digest = "ea7d1963ae25fb1ca8716dbded7790c19860ed10c947fce03af5d71a93153032"
   solver-name = "gps-cdcl"
   solver-version = 1

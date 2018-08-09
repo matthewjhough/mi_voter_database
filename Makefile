@@ -1,6 +1,7 @@
 .PHONY: setup init build clean pack upload deploy ensure stop
 
 DIR := ${CURDIR}
+DATETIME := $(shell date)
 
 setup:
 	docker run -d -p 5000:5000 --restart=always --name registry registry:2
@@ -20,6 +21,7 @@ pack:
 
 upload:
 	docker push localhost:5000/skaioskit/voter-service
+	cat k8s/deployment.yaml | sed -e 's/{{BUILD_TIME}}/${DATETIME}/g' > deployment.yaml
 
 deploy:
 	envsubst < deployment.yaml | kubectl apply -f -

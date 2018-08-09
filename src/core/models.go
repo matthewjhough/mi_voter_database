@@ -76,6 +76,7 @@ type Voter struct {
     City string       `gorm:"size:35"`
     State string       `gorm:"size:2"`
     Zip string       `gorm:"size:5"`
+    PhoneNumber string       `gorm:"size:50"`
     MailAddress1 string       `gorm:"size:50"`
     MailAddress2 string       `gorm:"size:50"`
     MailAddress3 string       `gorm:"size:50"`

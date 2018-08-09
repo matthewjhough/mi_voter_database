@@ -18,7 +18,11 @@ func NewVoterController(voterService services.IVoterService) *VoterController {
     }
 }
 func (p *VoterController) Get(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
-    voters, err := p.voterService.GetVoters(core.QueryRequest{})
+    first := r.URL.Query().Get("first")
+    last := r.URL.Query().Get("last")
+
+    //voters, err := p.voterService.GetVoters(core.QueryRequest{})
+    voters, err := p.voterService.GetVotersByName(first, last)
     if err == nil {
         return skaioskit.ControllerResponse{Status: http.StatusOK, Body: core.GetVotersResponse{Voters: voters}}
     } else {
