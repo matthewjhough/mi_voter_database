@@ -42,7 +42,7 @@ func (p *VoterController) Get(w http.ResponseWriter, r *http.Request) skaioskit.
     if err == nil {
         return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetVotersResponse{Voters: voters}}
     } else {
-        return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
+        panic(err)
     }
 }
 func (p *VoterController) Post(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {

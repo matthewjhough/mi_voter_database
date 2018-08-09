@@ -24,6 +24,7 @@ type QueryFilter struct {
 type QueryRequest struct {
     Limit uint
     Offset uint
+    Include []string
     Filters []QueryFilter
 }
 
@@ -53,5 +54,11 @@ func BuildQuery(db *gorm.DB, query QueryRequest, obj interface{}) *gorm.DB {
         }
     }
 
-    return db.Limit(buildQueryGetLimit(query)).Offset(buildQueryGetOffset(query)).Where(obj)
+    dbQuery := db.Limit(buildQueryGetLimit(query)).Offset(buildQueryGetOffset(query)).Where(obj)
+
+    for _, include := range query.Include {
+        dbQuery = dbQuery.Preload(include)
+    }
+
+    return dbQuery
 }

@@ -19,6 +19,7 @@ type GetVotersResponse struct {
 }
 
 type GetAboutResponse struct {
+    CoreVersion string
     Version string
     BuildTime string
 }

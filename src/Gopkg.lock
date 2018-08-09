@@ -91,7 +91,7 @@
   branch = "master"
   name = "github.com/nathanmentley/skaioskit-go-core"
   packages = ["."]
-  revision = "7b6021e524b66c1b31a2eb84e085d4d3de9246f6"
+  revision = "4ddd41cbf46945393b9cf14c931908d80f91530b"
 
 [[projects]]
   name = "github.com/pelletier/go-toml"
@@ -129,20 +129,14 @@
 [[projects]]
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
-  version = "v1.0.1"
+  revision = "9a97c102cda95a86cec2345a6f09f55a939babf5"
+  version = "v1.0.2"
 
 [[projects]]
   name = "github.com/spf13/viper"
   packages = ["."]
   revision = "907c19d40d9a6c9bb55f040ff4ae45271a4754b9"
   version = "v1.1.0"
-
-[[projects]]
-  branch = "master"
-  name = "go.pedge.io/inject"
-  packages = ["."]
-  revision = "cd3b6797dc874dbafdefe4e2379c2e26b51ea099"
 
 [[projects]]
   branch = "master"
@@ -178,6 +172,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ea7d1963ae25fb1ca8716dbded7790c19860ed10c947fce03af5d71a93153032"
+  inputs-digest = "b16d229ce7b6efbdfdc73882435e8d9abea04363f04e093214f7ea54ed472092"
   solver-name = "gps-cdcl"
   solver-version = 1

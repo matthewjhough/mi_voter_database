@@ -50,4 +50,4 @@ the first command will ensure the database schema is setup and the data files ar
 
 # Example Request
 
-localhost/voter?query={"Limit":2,"Offset":0,"Filters":[{"Field":"FirstName","Value":"NATHAN"},{"Field":"LastName","Value":"MENTLEY"}]}
+localhost/voter?query={"Limit":2,"Offset":0,"Include":[],"Filters":[{"Field":"FirstName","Value":"NATHAN"},{"Field":"LastName","Value":"MENTLEY"}]}

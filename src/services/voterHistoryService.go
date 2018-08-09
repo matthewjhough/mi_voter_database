@@ -56,7 +56,7 @@ func (p *VoterHistoryService) EnsureVoterHistoryTable() {
     p.db.Model(&models.VoterHistory{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
     p.db.Model(&models.VoterHistory{}).AddForeignKey("school_code", "school_districts(code)", "RESTRICT", "RESTRICT")
     p.db.Model(&models.VoterHistory{}).AddForeignKey("election_code", "elections(code)", "RESTRICT", "RESTRICT")
-    p.db.Model(&models.VoterHistory{}).AddForeignKey("voter_id", "voter(voter_id)", "RESTRICT", "RESTRICT")
+    p.db.Model(&models.VoterHistory{}).AddForeignKey("voter_id", "voters(voter_id)", "RESTRICT", "RESTRICT")
     p.db.Model(&models.VoterHistory{}).AddUniqueIndex("idx_voter_history_voter_id_election_code", "voter_id", "election_code")
 }
 func (p *VoterHistoryService) EnsureVoterHistory(history models.VoterHistory) {

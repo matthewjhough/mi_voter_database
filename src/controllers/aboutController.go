@@ -26,6 +26,7 @@ func NewAboutController() *AboutController {
 }
 func (p *AboutController) Get(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
     return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetAboutResponse{
+        CoreVersion: skaioskit.VERSION,
         Version: core.SERVICE_VERSION,
         BuildTime: os.Getenv("BUILD_DATETIME"),
     }}
