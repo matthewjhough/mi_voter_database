@@ -41,6 +41,8 @@ func (p *VoterService) GetVoters(query core.QueryRequest) ([]core.Voter, error) 
         field := reflect.ValueOf(&voter).Elem().FieldByName(filter.Field)
         if field.IsValid() {
             field.SetString(filter.Value)
+        } else {
+            panic("Unknown Field: " + filter.Field)
         }
     }
 

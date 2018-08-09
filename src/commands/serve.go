@@ -48,7 +48,7 @@ var serveCmd = &cobra.Command{
 
         //wrap everything behind a jwt middleware
         jwtMiddleware := skaioskit.JWTEnforceMiddleware([]byte(viper.GetString("jwt-key")))
-        http.Handle("/", jwtMiddleware(r))
+        http.Handle("/", skaioskit.PanicHandler(jwtMiddleware(r)))
 
         //server up app
         if err := http.ListenAndServe(":" + viper.GetString("port-number"), nil); err != nil {
