@@ -1,0 +1,164 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: voter-service-mysql-pv-claim
+  labels:
+    app: voter-service
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voter-service-mysql
+  labels:
+    app: voter-service-mysql
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: voter-service-mysql
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: voter-service-mysql
+  labels:
+    app: voter-service-mysql
+spec:
+  selector:
+    matchLabels:
+      app: voter-service-mysql
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: voter-service-mysql
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.7.22
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        - name: MYSQL_USER
+          value: skaioskit
+        - name: MYSQL_PASSWORD
+          value: password
+        - name: MYSQL_DATABASE
+          value: voter
+          # TODO: use secrets
+          #  valueFrom:
+          #    secretKeyRef:
+          #      name: mysql-pass
+          #      key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: voter-service-mysql-pv-claim
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: voter-service
+spec:
+  selector:
+    app: voter-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: voter-service
+  labels:
+    app: voter-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: voter-service
+    spec:
+      containers:
+      - name: voter-service
+        image: localhost:5000/skaioskit/voter-service:latest
+        imagePullPolicy: Always
+        command: 
+        - /voter
+        - serve
+        ports:
+        - containerPort: 80
+        env:
+        - name: BUILD_DATETIME
+          value: "{{BUILD_TIME}}"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: voter-service-data-pv-claim
+  labels:
+    app: voter-service
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: voter-service-ensure-cronjob
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: voter-service-ensure
+            image: localhost:5000/skaioskit/voter-service:latest
+            imagePullPolicy: Always
+            command: 
+            - /voter
+            - ensure
+            volumeMounts:
+            - name: voter-data-dir
+              mountPath: /data
+          volumes:
+          - name: voter-data-dir
+            persistentVolumeClaim:
+              claimName: voter-service-data-pv-claim
+          restartPolicy: OnFailure
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: voter-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: voter-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
