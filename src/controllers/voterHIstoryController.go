@@ -11,10 +11,12 @@
 package controllers
 
 import (
+    "encoding/json"
     "net/http"
 
     skaioskit "github.com/nathanmentley/skaioskit-go-core"
 
+    "skaioskit/core"
     "skaioskit/services"
 )
 
@@ -27,7 +29,21 @@ func NewVoterHistoryController(voterHistoryService services.IVoterHistoryService
     }
 }
 func (p *VoterHistoryController) Get(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
-    return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}
+    queryStr := r.URL.Query().Get("query")
+    query := core.QueryRequest{}
+    err := json.Unmarshal([]byte(queryStr), &query)
+
+    if err != nil {
+        return skaioskit.ControllerResponse{Status: http.StatusBadRequest, Body: skaioskit.EmptyResponse{}}
+    }
+
+    voterHistories, err := p.voterHistoryService.GetVoterHistories(query)
+
+    if err == nil {
+        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetVoterHistoriesResponse{VoterHistories: voterHistories}}
+    } else {
+        panic(err)
+    }
 }
 func (p *VoterHistoryController) Post(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
     return skaioskit.ControllerResponse{Status: http.StatusNotFound, Body: skaioskit.EmptyResponse{}}

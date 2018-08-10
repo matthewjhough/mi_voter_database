@@ -14,6 +14,8 @@ import (
     "skaioskit/models"
 )
 
+//TODO: These should probably be defined in the same go file as the controllers than use them.
+
 type GetAboutResponse struct {
     CoreVersion string
     Version string
@@ -42,4 +44,8 @@ type GetVillagesResponse struct {
 
 type GetVotersResponse struct {
     Voters []models.Voter
+}
+
+type GetVoterHistoriesResponse struct {
+    VoterHistories []models.VoterHistory
 }
