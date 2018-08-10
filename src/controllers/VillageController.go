@@ -37,10 +37,10 @@ func (p *VillageController) Get(w http.ResponseWriter, r *http.Request) skaioski
         return skaioskit.ControllerResponse{Status: http.StatusBadRequest, Body: skaioskit.EmptyResponse{}}
     }
 
-    villages, err := p.villageService.GetVillages(query)
+    villages, count, err := p.villageService.GetVillages(query)
 
     if err == nil {
-        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetVillagesResponse{Villages: villages}}
+        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetVillagesResponse{Villages: villages, Total: count}}
     } else {
         panic(err)
     }

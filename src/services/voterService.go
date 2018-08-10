@@ -21,7 +21,7 @@ import (
 type IVoterService interface {
     CreateVoter(models.Voter) models.Voter
     UpdateVoter(models.Voter) models.Voter
-    GetVoters(core.QueryRequest) ([]models.Voter, error)
+    GetVoters(core.QueryRequest) ([]models.Voter, uint64, error)
     GetVoter(uint64) (models.Voter, error)
     GetVoterCount() uint64
     EnsureVoterTable()
@@ -42,12 +42,14 @@ func (p *VoterService) UpdateVoter(voter models.Voter) models.Voter {
     p.db.Save(&voter)
     return voter
 }
-func (p *VoterService) GetVoters(query core.QueryRequest) ([]models.Voter, error) {
+func (p *VoterService) GetVoters(query core.QueryRequest) ([]models.Voter, uint64, error) {
+    var count uint64
     var voters []models.Voter
     voter := models.Voter{}
 
+    core.BuildQueryWithoutPagination(p.db, query, &models.Voter{}).Count(&count)
     err := core.BuildQuery(p.db, query, &voter).Find(&voters).Error
-    return voters, err
+    return voters, count, err
 }
 func (p *VoterService) GetVoter(voterId uint64) (models.Voter, error) {
     var voter models.Voter

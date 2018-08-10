@@ -37,10 +37,10 @@ func (p *CountyController) Get(w http.ResponseWriter, r *http.Request) skaioskit
         return skaioskit.ControllerResponse{Status: http.StatusBadRequest, Body: skaioskit.EmptyResponse{}}
     }
 
-    counties, err := p.countyService.GetCounties(query)
+    counties, count, err := p.countyService.GetCounties(query)
 
     if err == nil {
-        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetCountiesResponse{Counties: counties}}
+        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetCountiesResponse{Counties: counties, Total: count}}
     } else {
         panic(err)
     }

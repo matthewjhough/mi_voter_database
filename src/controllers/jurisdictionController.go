@@ -37,10 +37,10 @@ func (p *JurisdictionController) Get(w http.ResponseWriter, r *http.Request) ska
         return skaioskit.ControllerResponse{Status: http.StatusBadRequest, Body: skaioskit.EmptyResponse{}}
     }
 
-    jurisdictions, err := p.jurisdictionService.GetJurisdictions(query)
+    jurisdictions, count, err := p.jurisdictionService.GetJurisdictions(query)
 
     if err == nil {
-        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetJurisdictionsResponse{Jurisdictions: jurisdictions}}
+        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetJurisdictionsResponse{Jurisdictions: jurisdictions, Total: count}}
     } else {
         panic(err)
     }

@@ -44,7 +44,9 @@ func buildQueryGetOffset(query QueryRequest) uint {
     return query.Offset
 }
 
-func BuildQuery(db *gorm.DB, query QueryRequest, obj interface{}) *gorm.DB {
+func BuildQueryWithoutPagination(db *gorm.DB, query QueryRequest, obj interface{}) *gorm.DB {
+    dbQuery := db.Model(obj);
+
     for _, filter := range query.Filters {
         field := reflect.ValueOf(obj).Elem().FieldByName(filter.Field)
         if field.IsValid() {
@@ -53,12 +55,16 @@ func BuildQuery(db *gorm.DB, query QueryRequest, obj interface{}) *gorm.DB {
             panic("Unknown Field: " + filter.Field)
         }
     }
-
-    dbQuery := db.Limit(buildQueryGetLimit(query)).Offset(buildQueryGetOffset(query)).Where(obj)
+    dbQuery = dbQuery.Where(obj)
 
     for _, include := range query.Include {
         dbQuery = dbQuery.Preload(include)
     }
 
     return dbQuery
+}
+
+func BuildQuery(db *gorm.DB, query QueryRequest, obj interface{}) *gorm.DB {
+    dbQuery := BuildQueryWithoutPagination(db, query, obj)
+    return dbQuery.Limit(buildQueryGetLimit(query)).Offset(buildQueryGetOffset(query))
 }

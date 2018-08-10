@@ -24,28 +24,35 @@ type GetAboutResponse struct {
 
 type GetCountiesResponse struct {
     Counties []models.County
+    Total uint64
 }
 
 type GetElectionsResponse struct {
     Elections []models.Election
+    Total uint64
 }
 
 type GetJurisdictionsResponse struct {
     Jurisdictions []models.Jurisdiction
+    Total uint64
 }
 
 type GetSchoolDistrictsResponse struct {
     SchoolDistricts []models.SchoolDistrict
+    Total uint64
 }
 
 type GetVillagesResponse struct {
     Villages []models.Village
+    Total uint64
 }
 
 type GetVotersResponse struct {
     Voters []models.Voter
+    Total uint64
 }
 
 type GetVoterHistoriesResponse struct {
     VoterHistories []models.VoterHistory
+    Total uint64
 }

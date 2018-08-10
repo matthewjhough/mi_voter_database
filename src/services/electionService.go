@@ -22,7 +22,7 @@ type IElectionService interface {
     CreateElection(models.Election) models.Election
     UpdateElection(models.Election) models.Election
     GetElection(uint64) (models.Election, error)
-    GetElections(core.QueryRequest) ([]models.Election, error)
+    GetElections(core.QueryRequest) ([]models.Election, uint64, error)
     EnsureElections([]models.Election)
 }
 
@@ -45,12 +45,14 @@ func (p *ElectionService) GetElection(code uint64) (models.Election, error) {
     err := p.db.Where(&models.Election{Code: code}).First(&election).Error
     return election, err
 }
-func (p *ElectionService) GetElections(query core.QueryRequest) ([]models.Election, error) {
+func (p *ElectionService) GetElections(query core.QueryRequest) ([]models.Election, uint64, error) {
+    var count uint64
     var elections []models.Election
     election := models.Election{}
 
+    core.BuildQueryWithoutPagination(p.db, query, &models.Election{}).Count(&count)
     err := core.BuildQuery(p.db, query, &election).Find(&elections).Error
-    return elections, err
+    return elections, count, err
 }
 func (p *ElectionService) EnsureElections(elections []models.Election) {
     p.db.AutoMigrate(&models.Election{})

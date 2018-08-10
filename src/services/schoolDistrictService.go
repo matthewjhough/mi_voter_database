@@ -22,7 +22,7 @@ type ISchoolDistrictService interface {
     CreateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
     UpdateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
     GetSchoolDistrict(uint) (models.SchoolDistrict, error)
-    GetSchoolDistricts(core.QueryRequest) ([]models.SchoolDistrict, error)
+    GetSchoolDistricts(core.QueryRequest) ([]models.SchoolDistrict, uint64, error)
     EnsureSchoolDistricts([]models.SchoolDistrict)
 }
 
@@ -45,12 +45,14 @@ func (p *SchoolDistrictService) GetSchoolDistrict(code uint) (models.SchoolDistr
     err := p.db.Where(&models.SchoolDistrict{Code: code}).First(&school).Error
     return school, err
 }
-func (p *SchoolDistrictService) GetSchoolDistricts(query core.QueryRequest) ([]models.SchoolDistrict, error) {
+func (p *SchoolDistrictService) GetSchoolDistricts(query core.QueryRequest) ([]models.SchoolDistrict, uint64, error) {
+    var count uint64
     var schoolDistricts []models.SchoolDistrict
     schoolDistrict := models.SchoolDistrict{}
 
+    core.BuildQueryWithoutPagination(p.db, query, &models.SchoolDistrict{}).Count(&count)
     err := core.BuildQuery(p.db, query, &schoolDistrict).Find(&schoolDistricts).Error
-    return schoolDistricts, err
+    return schoolDistricts, count, err
 }
 func (p *SchoolDistrictService) EnsureSchoolDistricts(schools []models.SchoolDistrict) {
     p.db.AutoMigrate(&models.SchoolDistrict{})

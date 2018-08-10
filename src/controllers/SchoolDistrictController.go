@@ -37,10 +37,10 @@ func (p *SchoolDistrictController) Get(w http.ResponseWriter, r *http.Request) s
         return skaioskit.ControllerResponse{Status: http.StatusBadRequest, Body: skaioskit.EmptyResponse{}}
     }
 
-    schoolDistricts, err := p.schoolDistrictService.GetSchoolDistricts(query)
+    schoolDistricts, count, err := p.schoolDistrictService.GetSchoolDistricts(query)
 
     if err == nil {
-        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetSchoolDistrictsResponse{SchoolDistricts: schoolDistricts}}
+        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetSchoolDistrictsResponse{SchoolDistricts: schoolDistricts, Total: count}}
     } else {
         panic(err)
     }

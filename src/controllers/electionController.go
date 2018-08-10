@@ -37,10 +37,10 @@ func (p *ElectionController) Get(w http.ResponseWriter, r *http.Request) skaiosk
         return skaioskit.ControllerResponse{Status: http.StatusBadRequest, Body: skaioskit.EmptyResponse{}}
     }
 
-    elections, err := p.electionService.GetElections(query)
+    elections, count, err := p.electionService.GetElections(query)
 
     if err == nil {
-        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetElectionsResponse{Elections: elections}}
+        return skaioskit.ControllerResponse{Status: http.StatusOK, Body: GetElectionsResponse{Elections: elections, Total: count}}
     } else {
         panic(err)
     }

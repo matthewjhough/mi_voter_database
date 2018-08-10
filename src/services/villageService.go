@@ -22,7 +22,7 @@ type IVillageService interface {
     CreateVillage(models.Village) models.Village
     UpdateVillage(models.Village) models.Village
     GetVillage(uint) (models.Village, error)
-    GetVillages(core.QueryRequest) ([]models.Village, error)
+    GetVillages(core.QueryRequest) ([]models.Village, uint64, error)
     EnsureVillages([]models.Village)
 }
 
@@ -45,12 +45,14 @@ func (p *VillageService) GetVillage(code uint) (models.Village, error) {
     err := p.db.Where(&models.Village{Code: code}).First(&village).Error
     return village, err
 }
-func (p *VillageService) GetVillages(query core.QueryRequest) ([]models.Village, error) {
+func (p *VillageService) GetVillages(query core.QueryRequest) ([]models.Village, uint64, error) {
+    var count uint64
     var villages []models.Village
     village := models.Village{}
 
+    core.BuildQueryWithoutPagination(p.db, query, &models.Village{}).Count(&count)
     err := core.BuildQuery(p.db, query, &village).Find(&villages).Error
-    return villages, err
+    return villages, count, err
 }
 func (p *VillageService) EnsureVillages(villages []models.Village) {
     p.db.AutoMigrate(&models.Village{})
