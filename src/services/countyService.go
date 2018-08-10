@@ -14,12 +14,14 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
+    "skaioskit/core"
     "skaioskit/models"
 )
 
 type ICountyService interface {
     CreateCounty(models.County) models.County
     UpdateCounty(models.County) models.County
+    GetCounties(core.QueryRequest) ([]models.County, error)
     GetCounty(uint) (models.County, error)
     EnsureCounties([]models.County)
 }
@@ -42,6 +44,11 @@ func (p *CountyService) GetCounty(code uint) (models.County, error) {
     var county models.County
     err := p.db.Where(&models.County{Code: code}).First(&county).Error
     return county, err
+}
+func (p *CountyService) GetCounties(query core.QueryRequest) ([]models.County, error) {
+    var counties []models.County
+    err := core.BuildQuery(p.db, query, &models.County{}).Find(&counties).Error
+    return counties, err
 }
 func (p *CountyService) EnsureCounties(counties []models.County) {
     p.db.AutoMigrate(&models.County{})

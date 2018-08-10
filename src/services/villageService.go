@@ -14,6 +14,7 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
+    "skaioskit/core"
     "skaioskit/models"
 )
 
@@ -21,6 +22,7 @@ type IVillageService interface {
     CreateVillage(models.Village) models.Village
     UpdateVillage(models.Village) models.Village
     GetVillage(uint) (models.Village, error)
+    GetVillages(core.QueryRequest) ([]models.Village, error)
     EnsureVillages([]models.Village)
 }
 
@@ -42,6 +44,13 @@ func (p *VillageService) GetVillage(code uint) (models.Village, error) {
     var village models.Village
     err := p.db.Where(&models.Village{Code: code}).First(&village).Error
     return village, err
+}
+func (p *VillageService) GetVillages(query core.QueryRequest) ([]models.Village, error) {
+    var villages []models.Village
+    village := models.Village{}
+
+    err := core.BuildQuery(p.db, query, &village).Find(&villages).Error
+    return villages, err
 }
 func (p *VillageService) EnsureVillages(villages []models.Village) {
     p.db.AutoMigrate(&models.Village{})

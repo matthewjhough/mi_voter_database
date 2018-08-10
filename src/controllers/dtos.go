@@ -14,12 +14,32 @@ import (
     "skaioskit/models"
 )
 
-type GetVotersResponse struct {
-    Voters []models.Voter
-}
-
 type GetAboutResponse struct {
     CoreVersion string
     Version string
     BuildTime string
+}
+
+type GetCountiesResponse struct {
+    Counties []models.County
+}
+
+type GetElectionsResponse struct {
+    Elections []models.Election
+}
+
+type GetJurisdictionsResponse struct {
+    Jurisdictions []models.Jurisdiction
+}
+
+type GetSchoolDistrictsResponse struct {
+    SchoolDistricts []models.SchoolDistrict
+}
+
+type GetVillagesResponse struct {
+    Villages []models.Village
+}
+
+type GetVotersResponse struct {
+    Voters []models.Voter
 }

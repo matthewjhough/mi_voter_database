@@ -14,6 +14,7 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
+    "skaioskit/core"
     "skaioskit/models"
 )
 
@@ -21,6 +22,7 @@ type IElectionService interface {
     CreateElection(models.Election) models.Election
     UpdateElection(models.Election) models.Election
     GetElection(uint64) (models.Election, error)
+    GetElections(core.QueryRequest) ([]models.Election, error)
     EnsureElections([]models.Election)
 }
 
@@ -42,6 +44,13 @@ func (p *ElectionService) GetElection(code uint64) (models.Election, error) {
     var election models.Election
     err := p.db.Where(&models.Election{Code: code}).First(&election).Error
     return election, err
+}
+func (p *ElectionService) GetElections(query core.QueryRequest) ([]models.Election, error) {
+    var elections []models.Election
+    election := models.Election{}
+
+    err := core.BuildQuery(p.db, query, &election).Find(&elections).Error
+    return elections, err
 }
 func (p *ElectionService) EnsureElections(elections []models.Election) {
     p.db.AutoMigrate(&models.Election{})

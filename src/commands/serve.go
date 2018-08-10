@@ -38,21 +38,32 @@ var serveCmd = &cobra.Command{
         defer db.Close()
 
         //setup services
-        //schoolService := services.NewSchoolDistrictService(db)
-        //countyService := services.NewCountyService(db)
-        //jurisdictionService := services.NewJurisdictionService(db)
-        //electionService := services.NewElectionService(db)
+        schoolService := services.NewSchoolDistrictService(db)
+        countyService := services.NewCountyService(db)
+        jurisdictionService := services.NewJurisdictionService(db)
+        electionService := services.NewElectionService(db)
+        villageService := services.NewVillageService(db)
         voterService := services.NewVoterService(db)
         voterHistoryService := services.NewVoterHistoryService(db)
 
         //build controllers
         aboutController := skaioskit.NewControllerProcessor(controllers.NewAboutController())
+        countyController := skaioskit.NewControllerProcessor(controllers.NewCountyController(countyService))
+        electionController := skaioskit.NewControllerProcessor(controllers.NewElectionController(electionService))
+        jurisdictionController := skaioskit.NewControllerProcessor(controllers.NewJurisdictionController(jurisdictionService))
+        schoolDistrictController := skaioskit.NewControllerProcessor(controllers.NewSchoolDistrictController(schoolService))
+        villageController := skaioskit.NewControllerProcessor(controllers.NewVillageController(villageService))
         voterController := skaioskit.NewControllerProcessor(controllers.NewVoterController(voterService))
         voterHistoryController := skaioskit.NewControllerProcessor(controllers.NewVoterHistoryController(voterHistoryService))
 
         //setup routing to controllers
         r := mux.NewRouter()
         r.HandleFunc("/about", aboutController.Logic)
+        r.HandleFunc("/county", countyController.Logic)
+        r.HandleFunc("/election", electionController.Logic)
+        r.HandleFunc("/jurisdiction", jurisdictionController.Logic)
+        r.HandleFunc("/schoolDistrict", schoolDistrictController.Logic)
+        r.HandleFunc("/village", villageController.Logic)
         r.HandleFunc("/voter", voterController.Logic)
         r.HandleFunc("/voterHistory", voterHistoryController.Logic)
 

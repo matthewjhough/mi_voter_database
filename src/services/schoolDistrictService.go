@@ -14,6 +14,7 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
+    "skaioskit/core"
     "skaioskit/models"
 )
 
@@ -21,6 +22,7 @@ type ISchoolDistrictService interface {
     CreateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
     UpdateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
     GetSchoolDistrict(uint) (models.SchoolDistrict, error)
+    GetSchoolDistricts(core.QueryRequest) ([]models.SchoolDistrict, error)
     EnsureSchoolDistricts([]models.SchoolDistrict)
 }
 
@@ -42,6 +44,13 @@ func (p *SchoolDistrictService) GetSchoolDistrict(code uint) (models.SchoolDistr
     var school models.SchoolDistrict
     err := p.db.Where(&models.SchoolDistrict{Code: code}).First(&school).Error
     return school, err
+}
+func (p *SchoolDistrictService) GetSchoolDistricts(query core.QueryRequest) ([]models.SchoolDistrict, error) {
+    var schoolDistricts []models.SchoolDistrict
+    schoolDistrict := models.SchoolDistrict{}
+
+    err := core.BuildQuery(p.db, query, &schoolDistrict).Find(&schoolDistricts).Error
+    return schoolDistricts, err
 }
 func (p *SchoolDistrictService) EnsureSchoolDistricts(schools []models.SchoolDistrict) {
     p.db.AutoMigrate(&models.SchoolDistrict{})

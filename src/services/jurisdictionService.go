@@ -14,6 +14,7 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
+    "skaioskit/core"
     "skaioskit/models"
 )
 
@@ -21,6 +22,7 @@ type IJurisdictionService interface {
     CreateJurisdiction(models.Jurisdiction) models.Jurisdiction
     UpdateJurisdiction(models.Jurisdiction) models.Jurisdiction
     GetJurisdiction(uint) (models.Jurisdiction, error)
+    GetJurisdictions(core.QueryRequest) ([]models.Jurisdiction, error)
     EnsureJurisdictions([]models.Jurisdiction)
 }
 
@@ -42,6 +44,13 @@ func (p *JurisdictionService) GetJurisdiction(code uint) (models.Jurisdiction, e
     var jurisdiction models.Jurisdiction
     err := p.db.Where(&models.Jurisdiction{Code: code}).First(&jurisdiction).Error
     return jurisdiction, err
+}
+func (p *JurisdictionService) GetJurisdictions(query core.QueryRequest) ([]models.Jurisdiction, error) {
+    var jurisdictions []models.Jurisdiction
+    jurisdiction := models.Jurisdiction{}
+
+    err := core.BuildQuery(p.db, query, &jurisdiction).Find(&jurisdictions).Error
+    return jurisdictions, err
 }
 func (p *JurisdictionService) EnsureJurisdictions(jurisdictions []models.Jurisdiction) {
     p.db.AutoMigrate(&models.Jurisdiction{})
