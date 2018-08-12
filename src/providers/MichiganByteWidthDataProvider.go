@@ -18,14 +18,13 @@ import (
     "strings"
 
     "github.com/metakeule/fmtdate"
-    "github.com/jinzhu/gorm"
 
     "skaioskit/models"
 )
 
 type MichiganByteWidthDataProvider struct {
 }
-func NewMichiganByteWidthDataProvider(db *gorm.DB) *MichiganByteWidthDataProvider {
+func NewMichiganByteWidthDataProvider() *MichiganByteWidthDataProvider {
     return &MichiganByteWidthDataProvider{}
 }
 func (p *MichiganByteWidthDataProvider) ParseCounties() <-chan models.County {

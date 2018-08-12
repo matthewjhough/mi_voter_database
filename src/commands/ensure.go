@@ -41,7 +41,7 @@ var ensureCmd = &cobra.Command{
         voterService := services.NewVoterService(db)
         voterHistoryService := services.NewVoterHistoryService(db)
 
-        provider := providers.NewMichiganByteWidthDataProvider(db)
+        provider := providers.NewMichiganByteWidthDataProvider()
         //ensure db
         countyService.EnsureCountyTable()
         for county := range provider.ParseCounties() {
