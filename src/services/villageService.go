@@ -23,7 +23,8 @@ type IVillageService interface {
     UpdateVillage(models.Village) models.Village
     GetVillage(uint) (models.Village, error)
     GetVillages(core.QueryRequest) ([]models.Village, uint64, error)
-    EnsureVillages([]models.Village)
+    EnsureVillageTable()
+    EnsureVillage(models.Village)
 }
 
 type VillageService struct {
@@ -54,20 +55,19 @@ func (p *VillageService) GetVillages(query core.QueryRequest) ([]models.Village,
     err := core.BuildQuery(p.db, query, &village).Find(&villages).Error
     return villages, count, err
 }
-func (p *VillageService) EnsureVillages(villages []models.Village) {
+func (p *VillageService) EnsureVillageTable() {
     p.db.AutoMigrate(&models.Village{})
     p.db.Model(&models.Village{}).AddUniqueIndex("idx_village_code", "code")
     p.db.Model(&models.Village{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
     p.db.Model(&models.Village{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
+}
+func (p *VillageService) EnsureVillage(village models.Village) {
+    existing, err := p.GetVillage(village.Code)
 
-    for _, village := range villages {
-        existing, err := p.GetVillage(village.Code)
-
-        if err != nil {
-            p.CreateVillage(village)
-        } else {
-            existing.Name = village.Name
-            p.UpdateVillage(existing)
-        }
+    if err != nil {
+        p.CreateVillage(village)
+    } else {
+        existing.Name = village.Name
+        p.UpdateVillage(existing)
     }
 }

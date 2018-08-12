@@ -23,7 +23,8 @@ type IElectionService interface {
     UpdateElection(models.Election) models.Election
     GetElection(uint64) (models.Election, error)
     GetElections(core.QueryRequest) ([]models.Election, uint64, error)
-    EnsureElections([]models.Election)
+    EnsureElectionTable()
+    EnsureElection(models.Election)
 }
 
 type ElectionService struct {
@@ -54,19 +55,18 @@ func (p *ElectionService) GetElections(query core.QueryRequest) ([]models.Electi
     err := core.BuildQuery(p.db, query, &election).Find(&elections).Error
     return elections, count, err
 }
-func (p *ElectionService) EnsureElections(elections []models.Election) {
+func (p *ElectionService) EnsureElectionTable() {
     p.db.AutoMigrate(&models.Election{})
     p.db.Model(&models.Election{}).AddUniqueIndex("idx_election_code", "code")
+}
+func (p *ElectionService) EnsureElection(election models.Election) {
+    existing, err := p.GetElection(election.Code)
 
-    for _, election := range elections {
-        existing, err := p.GetElection(election.Code)
-
-        if err != nil {
-            p.CreateElection(election)
-        } else {
-            existing.Name = election.Name
-            p.UpdateElection(existing)
-        }
+    if err != nil {
+        p.CreateElection(election)
+    } else {
+        existing.Name = election.Name
+        p.UpdateElection(existing)
     }
 }
 

@@ -23,7 +23,8 @@ type ISchoolDistrictService interface {
     UpdateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
     GetSchoolDistrict(uint) (models.SchoolDistrict, error)
     GetSchoolDistricts(core.QueryRequest) ([]models.SchoolDistrict, uint64, error)
-    EnsureSchoolDistricts([]models.SchoolDistrict)
+    EnsureSchoolDistrictTable()
+    EnsureSchoolDistrict(models.SchoolDistrict)
 }
 
 type SchoolDistrictService struct {
@@ -54,21 +55,20 @@ func (p *SchoolDistrictService) GetSchoolDistricts(query core.QueryRequest) ([]m
     err := core.BuildQuery(p.db, query, &schoolDistrict).Find(&schoolDistricts).Error
     return schoolDistricts, count, err
 }
-func (p *SchoolDistrictService) EnsureSchoolDistricts(schools []models.SchoolDistrict) {
+func (p *SchoolDistrictService) EnsureSchoolDistrictTable() {
     p.db.AutoMigrate(&models.SchoolDistrict{})
     p.db.Model(&models.SchoolDistrict{}).AddUniqueIndex("idx_school_district_code", "code")
     p.db.Model(&models.SchoolDistrict{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
     p.db.Model(&models.SchoolDistrict{}).AddForeignKey("jurisdiction_code", "jurisdictions(code)", "RESTRICT", "RESTRICT")
+}
+func (p *SchoolDistrictService) EnsureSchoolDistrict(school models.SchoolDistrict) {
+    existing, err := p.GetSchoolDistrict(school.Code)
 
-    for _, school := range schools {
-        existing, err := p.GetSchoolDistrict(school.Code)
-
-        if err != nil {
-            p.CreateSchoolDistrict(school)
-        } else {
-            existing.Name = school.Name
-            p.UpdateSchoolDistrict(existing)
-        }
+    if err != nil {
+        p.CreateSchoolDistrict(school)
+    } else {
+        existing.Name = school.Name
+        p.UpdateSchoolDistrict(existing)
     }
 }
 

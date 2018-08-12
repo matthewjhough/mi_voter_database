@@ -47,7 +47,7 @@ type Voter struct {
     StateSenate uint
     UsCongress uint
     CountyCommissioner uint
-    VillageCode uint
+    VillageCode *uint
     VillagePrecinct string `gorm:"size:6"`
     SchoolPrecinct string `gorm:"size:6"`
     PermanentAbsenteeInd string  `gorm:"size:1"`

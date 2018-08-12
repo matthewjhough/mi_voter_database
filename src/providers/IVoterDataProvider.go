@@ -11,15 +11,15 @@
 package providers
 
 import (
-    "skaioskit/services"
+    "skaioskit/models"
 )
 
 type IVoterDataProvider interface {
-    EnsureCounties(services.ICountyService)
-    EnsureJurisdictions(services.IJurisdictionService)
-    EnsureSchools(services.ISchoolDistrictService)
-    EnsureVillages(services.IVillageService)
-    EnsureElections(services.IElectionService)
-    EnsureVoters(services.IVoterService)
-    EnsureVoterHistories(services.IVoterHistoryService)
+    ParseCounties() <-chan models.County
+    ParseJurisdictions() <-chan models.Jurisdiction
+    ParseSchools() <-chan models.SchoolDistrict
+    ParseVillages() <-chan models.Village
+    ParseElections() <-chan models.Election
+    ParseVoters() <-chan models.Voter
+    ParseVoterHistories() <-chan models.VoterHistory
 }

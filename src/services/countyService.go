@@ -23,7 +23,8 @@ type ICountyService interface {
     UpdateCounty(models.County) models.County
     GetCounties(core.QueryRequest) ([]models.County, uint64, error)
     GetCounty(uint) (models.County, error)
-    EnsureCounties([]models.County)
+    EnsureCountyTable()
+    EnsureCounty(models.County)
 }
 
 type CountyService struct {
@@ -53,19 +54,16 @@ func (p *CountyService) GetCounties(query core.QueryRequest) ([]models.County, u
     err := core.BuildQuery(p.db, query, &models.County{}).Find(&counties).Error
     return counties, count, err
 }
-func (p *CountyService) EnsureCounties(counties []models.County) {
+func (p *CountyService) EnsureCountyTable() {
     p.db.AutoMigrate(&models.County{})
     p.db.Model(&models.County{}).AddUniqueIndex("idx_county_code", "code")
-
-    for _, county := range counties {
-        existing, err := p.GetCounty(county.Code)
-
-        if err != nil {
-            p.CreateCounty(county)
-        } else {
-            existing.Name = county.Name
-            p.UpdateCounty(existing)
-        }
+}
+func (p *CountyService) EnsureCounty(county models.County) {
+    existing, err := p.GetCounty(county.Code)
+    if err != nil {
+        p.CreateCounty(county)
+    } else {
+        existing.Name = county.Name
+        p.UpdateCounty(existing)
     }
 }
-

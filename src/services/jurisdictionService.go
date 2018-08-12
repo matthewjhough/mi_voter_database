@@ -23,7 +23,8 @@ type IJurisdictionService interface {
     UpdateJurisdiction(models.Jurisdiction) models.Jurisdiction
     GetJurisdiction(uint) (models.Jurisdiction, error)
     GetJurisdictions(core.QueryRequest) ([]models.Jurisdiction, uint64, error)
-    EnsureJurisdictions([]models.Jurisdiction)
+    EnsureJurisdictionTable()
+    EnsureJurisdiction(models.Jurisdiction)
 }
 
 type JurisdictionService struct {
@@ -54,20 +55,19 @@ func (p *JurisdictionService) GetJurisdictions(query core.QueryRequest) ([]model
     err := core.BuildQuery(p.db, query, &jurisdiction).Find(&jurisdictions).Error
     return jurisdictions, count, err
 }
-func (p *JurisdictionService) EnsureJurisdictions(jurisdictions []models.Jurisdiction) {
+func (p *JurisdictionService) EnsureJurisdictionTable() {
     p.db.AutoMigrate(&models.Jurisdiction{})
     p.db.Model(&models.Jurisdiction{}).AddUniqueIndex("idx_jurisdiction_code", "code")
     p.db.Model(&models.Jurisdiction{}).AddForeignKey("county_code", "counties(code)", "RESTRICT", "RESTRICT")
+}
+func (p *JurisdictionService) EnsureJurisdiction(jurisdiction models.Jurisdiction) {
+    existing, err := p.GetJurisdiction(jurisdiction.Code)
 
-    for _, jurisdiction := range jurisdictions {
-        existing, err := p.GetJurisdiction(jurisdiction.Code)
-
-        if err != nil {
-            p.CreateJurisdiction(jurisdiction)
-        } else {
-            existing.Name = jurisdiction.Name
-            p.UpdateJurisdiction(existing)
-        }
+    if err != nil {
+        p.CreateJurisdiction(jurisdiction)
+    } else {
+        existing.Name = jurisdiction.Name
+        p.UpdateJurisdiction(existing)
     }
 }
 

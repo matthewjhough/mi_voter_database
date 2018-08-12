@@ -43,13 +43,34 @@ var ensureCmd = &cobra.Command{
 
         provider := providers.NewMichiganByteWidthDataProvider(db)
         //ensure db
-        provider.EnsureCounties(countyService)
-        provider.EnsureJurisdictions(jurisdictionService)
-        provider.EnsureSchools(schoolService)
-        provider.EnsureVillages(villageService)
-        provider.EnsureElections(electionService)
-        provider.EnsureVoters(voterService)
-        provider.EnsureVoterHistories(voterHistoryService)
+        countyService.EnsureCountyTable()
+        for county := range provider.ParseCounties() {
+            countyService.EnsureCounty(county)
+        }
+        jurisdictionService.EnsureJurisdictionTable()
+        for jurisdiction := range provider.ParseJurisdictions() {
+            jurisdictionService.EnsureJurisdiction(jurisdiction)
+        }
+        schoolService.EnsureSchoolDistrictTable()
+        for school := range provider.ParseSchools() {
+            schoolService.EnsureSchoolDistrict(school)
+        }
+        villageService.EnsureVillageTable()
+        for village := range provider.ParseVillages() {
+            villageService.EnsureVillage(village)
+        }
+        electionService.EnsureElectionTable()
+        for election := range provider.ParseElections() {
+            electionService.EnsureElection(election)
+        }
+        voterService.EnsureVoterTable()
+        for voter := range provider.ParseVoters() {
+            voterService.EnsureVoter(voter)
+        }
+        voterHistoryService.EnsureVoterHistoryTable()
+        for voterHistory := range provider.ParseVoterHistories() {
+            voterHistoryService.EnsureVoterHistory(voterHistory)
+        }
     },
 }
 
