@@ -91,7 +91,7 @@
   branch = "master"
   name = "github.com/nathanmentley/skaioskit-go-core"
   packages = ["."]
-  revision = "4ddd41cbf46945393b9cf14c931908d80f91530b"
+  revision = "0cb9656ef27fe4caa8fcf93171b0164ff80725d5"
 
 [[projects]]
   name = "github.com/pelletier/go-toml"
@@ -142,7 +142,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "904bdc257025c7b3f43c19360ad3ab85783fad78"
+  revision = "98c5dad5d1a0e8a73845ecc8897d0bd56586511d"
 
 [[projects]]
   name = "golang.org/x/text"

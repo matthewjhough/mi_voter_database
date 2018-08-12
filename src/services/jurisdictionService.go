@@ -14,7 +14,8 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    skaioskit "github.com/nathanmentley/skaioskit-go-core"
+
     "skaioskit/models"
 )
 
@@ -22,7 +23,7 @@ type IJurisdictionService interface {
     CreateJurisdiction(models.Jurisdiction) models.Jurisdiction
     UpdateJurisdiction(models.Jurisdiction) models.Jurisdiction
     GetJurisdiction(uint) (models.Jurisdiction, error)
-    GetJurisdictions(core.QueryRequest) ([]models.Jurisdiction, uint64, error)
+    GetJurisdictions(skaioskit.QueryRequest) ([]models.Jurisdiction, uint64, error)
     EnsureJurisdictionTable()
     EnsureJurisdiction(models.Jurisdiction)
 }
@@ -46,13 +47,13 @@ func (p *JurisdictionService) GetJurisdiction(code uint) (models.Jurisdiction, e
     err := p.db.Where(&models.Jurisdiction{Code: code}).First(&jurisdiction).Error
     return jurisdiction, err
 }
-func (p *JurisdictionService) GetJurisdictions(query core.QueryRequest) ([]models.Jurisdiction, uint64, error) {
+func (p *JurisdictionService) GetJurisdictions(query skaioskit.QueryRequest) ([]models.Jurisdiction, uint64, error) {
     var count uint64
     var jurisdictions []models.Jurisdiction
     jurisdiction := models.Jurisdiction{}
 
-    core.BuildQueryWithoutPagination(p.db, query, &models.Jurisdiction{}).Count(&count)
-    err := core.BuildQuery(p.db, query, &jurisdiction).Find(&jurisdictions).Error
+    skaioskit.BuildQueryWithoutPagination(p.db, query, &models.Jurisdiction{}).Count(&count)
+    err := skaioskit.BuildQuery(p.db, query, &jurisdiction).Find(&jurisdictions).Error
     return jurisdictions, count, err
 }
 func (p *JurisdictionService) EnsureJurisdictionTable() {

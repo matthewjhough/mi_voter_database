@@ -14,7 +14,8 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    skaioskit "github.com/nathanmentley/skaioskit-go-core"
+
     "skaioskit/models"
 )
 
@@ -22,7 +23,7 @@ type IVillageService interface {
     CreateVillage(models.Village) models.Village
     UpdateVillage(models.Village) models.Village
     GetVillage(uint) (models.Village, error)
-    GetVillages(core.QueryRequest) ([]models.Village, uint64, error)
+    GetVillages(skaioskit.QueryRequest) ([]models.Village, uint64, error)
     EnsureVillageTable()
     EnsureVillage(models.Village)
 }
@@ -46,13 +47,13 @@ func (p *VillageService) GetVillage(code uint) (models.Village, error) {
     err := p.db.Where(&models.Village{Code: code}).First(&village).Error
     return village, err
 }
-func (p *VillageService) GetVillages(query core.QueryRequest) ([]models.Village, uint64, error) {
+func (p *VillageService) GetVillages(query skaioskit.QueryRequest) ([]models.Village, uint64, error) {
     var count uint64
     var villages []models.Village
     village := models.Village{}
 
-    core.BuildQueryWithoutPagination(p.db, query, &models.Village{}).Count(&count)
-    err := core.BuildQuery(p.db, query, &village).Find(&villages).Error
+    skaioskit.BuildQueryWithoutPagination(p.db, query, &models.Village{}).Count(&count)
+    err := skaioskit.BuildQuery(p.db, query, &village).Find(&villages).Error
     return villages, count, err
 }
 func (p *VillageService) EnsureVillageTable() {

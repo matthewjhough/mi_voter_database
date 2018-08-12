@@ -14,14 +14,15 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    skaioskit "github.com/nathanmentley/skaioskit-go-core"
+
     "skaioskit/models"
 )
 
 type ICountyService interface {
     CreateCounty(models.County) models.County
     UpdateCounty(models.County) models.County
-    GetCounties(core.QueryRequest) ([]models.County, uint64, error)
+    GetCounties(skaioskit.QueryRequest) ([]models.County, uint64, error)
     GetCounty(uint) (models.County, error)
     EnsureCountyTable()
     EnsureCounty(models.County)
@@ -46,12 +47,12 @@ func (p *CountyService) GetCounty(code uint) (models.County, error) {
     err := p.db.Where(&models.County{Code: code}).First(&county).Error
     return county, err
 }
-func (p *CountyService) GetCounties(query core.QueryRequest) ([]models.County, uint64, error) {
+func (p *CountyService) GetCounties(query skaioskit.QueryRequest) ([]models.County, uint64, error) {
     var count uint64
     var counties []models.County
 
-    core.BuildQueryWithoutPagination(p.db, query, &models.County{}).Count(&count)
-    err := core.BuildQuery(p.db, query, &models.County{}).Find(&counties).Error
+    skaioskit.BuildQueryWithoutPagination(p.db, query, &models.County{}).Count(&count)
+    err := skaioskit.BuildQuery(p.db, query, &models.County{}).Find(&counties).Error
     return counties, count, err
 }
 func (p *CountyService) EnsureCountyTable() {

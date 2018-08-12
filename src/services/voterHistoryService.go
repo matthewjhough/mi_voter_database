@@ -14,7 +14,8 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    skaioskit "github.com/nathanmentley/skaioskit-go-core"
+
     "skaioskit/models"
 )
 
@@ -22,7 +23,7 @@ type IVoterHistoryService interface {
     CreateVoterHistory(models.VoterHistory) models.VoterHistory
     UpdateVoterHistory(models.VoterHistory) models.VoterHistory
     GetVoterHistory(uint64) (models.VoterHistory, error)
-    GetVoterHistories(core.QueryRequest) ([]models.VoterHistory, uint64, error)
+    GetVoterHistories(skaioskit.QueryRequest) ([]models.VoterHistory, uint64, error)
     GetVoterHistoryCount() uint64
     EnsureVoterHistoryTable()
     EnsureVoterHistory(models.VoterHistory)
@@ -47,13 +48,13 @@ func (p *VoterHistoryService) GetVoterHistory(electionCode uint64) (models.Voter
     err := p.db.Where(&models.VoterHistory{ElectionCode: electionCode}).First(&history).Error
     return history, err
 }
-func (p *VoterHistoryService) GetVoterHistories(query core.QueryRequest) ([]models.VoterHistory, uint64, error) {
+func (p *VoterHistoryService) GetVoterHistories(query skaioskit.QueryRequest) ([]models.VoterHistory, uint64, error) {
     var count uint64
     var voterHistories []models.VoterHistory
     voterHistory := models.VoterHistory{}
 
-    core.BuildQueryWithoutPagination(p.db, query, &models.VoterHistory{}).Count(&count)
-    err := core.BuildQuery(p.db, query, &voterHistory).Find(&voterHistories).Error
+    skaioskit.BuildQueryWithoutPagination(p.db, query, &models.VoterHistory{}).Count(&count)
+    err := skaioskit.BuildQuery(p.db, query, &voterHistory).Find(&voterHistories).Error
     return voterHistories, count, err
 }
 func (p *VoterHistoryService) GetVoterHistoryCount() uint64 {

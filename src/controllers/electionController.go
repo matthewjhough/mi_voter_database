@@ -16,7 +16,6 @@ import (
 
     skaioskit "github.com/nathanmentley/skaioskit-go-core"
 
-    "skaioskit/core"
     "skaioskit/services"
 )
 
@@ -30,7 +29,7 @@ func NewElectionController(electionService services.IElectionService) *ElectionC
 }
 func (p *ElectionController) Get(w http.ResponseWriter, r *http.Request) skaioskit.ControllerResponse {
     queryStr := r.URL.Query().Get("query")
-    query := core.QueryRequest{}
+    query := skaioskit.QueryRequest{}
     err := json.Unmarshal([]byte(queryStr), &query)
 
     if err != nil {

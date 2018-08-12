@@ -14,7 +14,8 @@ import (
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 
-    "skaioskit/core"
+    skaioskit "github.com/nathanmentley/skaioskit-go-core"
+
     "skaioskit/models"
 )
 
@@ -22,7 +23,7 @@ type ISchoolDistrictService interface {
     CreateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
     UpdateSchoolDistrict(models.SchoolDistrict) models.SchoolDistrict
     GetSchoolDistrict(uint) (models.SchoolDistrict, error)
-    GetSchoolDistricts(core.QueryRequest) ([]models.SchoolDistrict, uint64, error)
+    GetSchoolDistricts(skaioskit.QueryRequest) ([]models.SchoolDistrict, uint64, error)
     EnsureSchoolDistrictTable()
     EnsureSchoolDistrict(models.SchoolDistrict)
 }
@@ -46,13 +47,13 @@ func (p *SchoolDistrictService) GetSchoolDistrict(code uint) (models.SchoolDistr
     err := p.db.Where(&models.SchoolDistrict{Code: code}).First(&school).Error
     return school, err
 }
-func (p *SchoolDistrictService) GetSchoolDistricts(query core.QueryRequest) ([]models.SchoolDistrict, uint64, error) {
+func (p *SchoolDistrictService) GetSchoolDistricts(query skaioskit.QueryRequest) ([]models.SchoolDistrict, uint64, error) {
     var count uint64
     var schoolDistricts []models.SchoolDistrict
     schoolDistrict := models.SchoolDistrict{}
 
-    core.BuildQueryWithoutPagination(p.db, query, &models.SchoolDistrict{}).Count(&count)
-    err := core.BuildQuery(p.db, query, &schoolDistrict).Find(&schoolDistricts).Error
+    skaioskit.BuildQueryWithoutPagination(p.db, query, &models.SchoolDistrict{}).Count(&count)
+    err := skaioskit.BuildQuery(p.db, query, &schoolDistrict).Find(&schoolDistricts).Error
     return schoolDistricts, count, err
 }
 func (p *SchoolDistrictService) EnsureSchoolDistrictTable() {
