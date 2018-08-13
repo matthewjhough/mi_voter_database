@@ -10,6 +10,8 @@
 
 package models
 import (
+    "strconv"
+
     "github.com/jinzhu/gorm"
 )
 
@@ -18,4 +20,20 @@ type County struct {
 
     Name string  `gorm:"size:255"`
     Code uint
+}
+func GetCountyCSVHeader() []string {
+    var ret []string
+
+    ret = append(ret, "name")
+    ret = append(ret, "county_code")
+
+    return ret
+}
+func (c *County) ToSlice() []string {
+    var ret []string
+
+    ret = append(ret, c.Name)
+    ret = append(ret, strconv.FormatUint(uint64(c.Code), 10))
+
+    return ret
 }

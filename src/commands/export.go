@@ -11,9 +11,13 @@
 package commands
 
 import (
+    "os"
+    "encoding/csv"
+
     "github.com/spf13/cobra"
 
-    //"skaioskit/providers"
+    "skaioskit/models"
+    "skaioskit/providers"
 )
 
 var exportCmd = &cobra.Command{
@@ -21,11 +25,23 @@ var exportCmd = &cobra.Command{
     Short: "Generates csv files from data provider",
     Long:  `Generates csv files from the configured data provider / data set.`,
     Run: func(cmd *cobra.Command, args []string) {
-        /*
         provider := providers.NewMichiganByteWidthDataProvider()
 
-        for county := range provider.ParseCounties() {
+        file, err := os.Create("/working/export/counties.csv")
+        if err != nil {
+            panic(err)
         }
+        defer file.Close()
+
+        w := csv.NewWriter(file)
+        w.Write(models.GetCountyCSVHeader())
+        for county := range provider.ParseCounties() {
+            if err := w.Write(county.ToSlice()); err != nil {
+                panic(err)
+            }
+        }
+        w.Flush()
+        /*
         for jurisdiction := range provider.ParseJurisdictions() {
         }
         for school := range provider.ParseSchools() {

@@ -44,7 +44,7 @@ func (p *MichiganByteWidthDataProvider) ParseCounties() <-chan models.County {
                 panic(err)
             }
 
-            chnl <- models.County{Code: uint(code), Name: line[2:]}
+            chnl <- models.County{Code: uint(code), Name: strings.Trim(line[2:], " ")}
         }
 
         if err := scanner.Err(); err != nil {

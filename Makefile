@@ -1,4 +1,4 @@
-.PHONY: setup init build clean pack upload deploy ensure stop
+.PHONY: setup init build clean pack upload deploy ensure export stop
 
 DIR := ${CURDIR}
 DATETIME := $(shell date)
@@ -28,6 +28,9 @@ deploy:
 
 ensure:
 	kubectl create job --from=cronjob/voter-service-ensure-cronjob voter-service-ensure-cronjob-job
+
+export:
+	docker run -it -v ${DIR}/data:/data -v ${DIR}/working:/working localhost:5000/skaioskit/voter-service /voter export
 
 stop:
 	kubectl delete deployments,services,pods,pvc,cronjob,job --all
