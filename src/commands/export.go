@@ -15,6 +15,7 @@ import (
     "encoding/csv"
 
     "github.com/spf13/cobra"
+    "github.com/jinzhu/copier"
 
     "skaioskit/models"
     "skaioskit/providers"
@@ -27,20 +28,7 @@ var exportCmd = &cobra.Command{
     Run: func(cmd *cobra.Command, args []string) {
         provider := providers.NewMichiganByteWidthDataProvider()
 
-        file, err := os.Create("/working/export/counties.csv")
-        if err != nil {
-            panic(err)
-        }
-        defer file.Close()
-
-        w := csv.NewWriter(file)
-        w.Write(models.GetCountyCSVHeader())
-        for county := range provider.ParseCounties() {
-            if err := w.Write(county.ToSlice()); err != nil {
-                panic(err)
-            }
-        }
-        w.Flush()
+        writeCounties(provider)
         /*
         for jurisdiction := range provider.ParseJurisdictions() {
         }
@@ -56,6 +44,36 @@ var exportCmd = &cobra.Command{
         }
         */
     },
+}
+
+func writeCounties(provider providers.IVoterDataProvider) {
+    chnl := make(chan models.IExportable)
+    go func() {
+        for county := range provider.ParseCounties() {
+            obj := models.County{}
+            copier.Copy(&obj, &county)
+            chnl <- &obj
+        }
+        close(chnl)
+    }()
+    writeCsv("/working/export/counties.csv", models.GetCountyCSVHeader(), chnl)
+}
+
+func writeCsv(filename string, header []string, chnl <-chan models.IExportable) {
+    file, err := os.Create(filename)
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    w := csv.NewWriter(file)
+    w.Write(header)
+    for record := range chnl {
+        if err := w.Write(record.ToSlice()); err != nil {
+            panic(err)
+        }
+    }
+    w.Flush()
 }
 
 //Entry

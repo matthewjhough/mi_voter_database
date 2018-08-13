@@ -55,6 +55,12 @@
   version = "v1.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jinzhu/copier"
+  packages = ["."]
+  revision = "7e38e58719c33e0d44d585c4ab477a30f8cb82dd"
+
+[[projects]]
   name = "github.com/jinzhu/gorm"
   packages = [
     ".",
@@ -172,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b16d229ce7b6efbdfdc73882435e8d9abea04363f04e093214f7ea54ed472092"
+  inputs-digest = "6318733e3351185da3616c3e3c0fa2934eb537039c1ea5bcdcec018607749c4f"
   solver-name = "gps-cdcl"
   solver-version = 1
