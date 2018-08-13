@@ -73,7 +73,7 @@ func (p *MichiganByteWidthDataProvider) ParseJurisdictions() <-chan models.Juris
                 panic(err)
             }
 
-            chnl <- models.Jurisdiction{Code: uint(code), CountyCode: uint(countyCode), Name: line[7:]}
+            chnl <- models.Jurisdiction{Code: uint(code), CountyCode: uint(countyCode), Name: strings.Trim(line[7:], " ")}
         }
 
         if err := scanner.Err(); err != nil {
@@ -103,7 +103,7 @@ func (p *MichiganByteWidthDataProvider) ParseSchools() <-chan models.SchoolDistr
                 panic(err)
             }
 
-            chnl <- models.SchoolDistrict{CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), Code: uint(code), Name: line[12:]}
+            chnl <- models.SchoolDistrict{CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), Code: uint(code), Name: strings.Trim(line[12:], " ")}
         }
 
         if err := scanner.Err(); err != nil {
@@ -133,7 +133,7 @@ func (p *MichiganByteWidthDataProvider) ParseVillages() <-chan models.Village {
                 panic(err)
             }
 
-            chnl <- models.Village{Code: uint(code), CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), VillageId: id, Name: line[25:]}
+            chnl <- models.Village{Code: uint(code), CountyCode: uint(countyCode), JurisdictionCode: uint(jurisdictionCode), VillageId: id, Name: strings.Trim(line[25:], " ")}
         }
 
         if err := scanner.Err(); err != nil {
@@ -163,7 +163,7 @@ func (p *MichiganByteWidthDataProvider) ParseElections() <-chan models.Election 
                 panic(err)
             }
 
-            chnl <- models.Election{Code: code, Date: date, Name: line[21:]}
+            chnl <- models.Election{Code: code, Date: date, Name: strings.Trim(line[21:], " ")}
         }
 
         if err := scanner.Err(); err != nil {

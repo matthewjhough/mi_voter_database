@@ -10,6 +10,7 @@
 
 package models
 import (
+    "strconv"
     "time"
 
     "github.com/jinzhu/gorm"
@@ -21,4 +22,22 @@ type Election struct {
     Name string  `gorm:"size:255"`
     Code uint64
     Date time.Time `gorm:"type:datetime"`
+}
+func GetElectionCSVHeader() []string {
+    var ret []string
+
+    ret = append(ret, "name")
+    ret = append(ret, "election_code")
+    ret = append(ret, "date")
+
+    return ret
+}
+func (e *Election) ToSlice() []string {
+    var ret []string
+
+    ret = append(ret, e.Name)
+    ret = append(ret, strconv.FormatUint(uint64(e.Code), 10))
+    ret = append(ret, e.Date.Format("2006-01-02"))
+
+    return ret
 }

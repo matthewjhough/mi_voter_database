@@ -56,3 +56,13 @@ type Voter struct {
 
     VoterHistories []VoterHistory   `gorm:"foreignkey:VoterId;association_foreignkey:VoterId"`
 }
+func GetVoterCSVHeader() []string {
+    var ret []string
+
+    return ret
+}
+func (v *Voter) ToSlice() []string {
+    var ret []string
+
+    return ret
+}

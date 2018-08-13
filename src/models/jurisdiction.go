@@ -10,6 +10,8 @@
 
 package models
 import (
+    "strconv"
+
     "github.com/jinzhu/gorm"
 )
 
@@ -19,4 +21,22 @@ type Jurisdiction struct {
     Name string  `gorm:"size:255"`
     Code uint
     CountyCode uint
+}
+func GetJurisdictionCSVHeader() []string {
+    var ret []string
+
+    ret = append(ret, "name")
+    ret = append(ret, "jurisdiction_code")
+    ret = append(ret, "county_code")
+
+    return ret
+}
+func (j *Jurisdiction) ToSlice() []string {
+    var ret []string
+
+    ret = append(ret, j.Name)
+    ret = append(ret, strconv.FormatUint(uint64(j.Code), 10))
+    ret = append(ret, strconv.FormatUint(uint64(j.CountyCode), 10))
+
+    return ret
 }

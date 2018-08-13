@@ -29,19 +29,13 @@ var exportCmd = &cobra.Command{
         provider := providers.NewMichiganByteWidthDataProvider()
 
         writeCounties(provider)
+        writeElections(provider)
+        writeJurisdictions(provider)
+        writeSchoolDistricts(provider)
+        writeVillages(provider)
         /*
-        for jurisdiction := range provider.ParseJurisdictions() {
-        }
-        for school := range provider.ParseSchools() {
-        }
-        for village := range provider.ParseVillages() {
-        }
-        for election := range provider.ParseElections() {
-        }
-        for voter := range provider.ParseVoters() {
-        }
-        for voterHistory := range provider.ParseVoterHistories() {
-        }
+        writeVoters(provider)
+        writeVoterHistories(provider)
         */
     },
 }
@@ -57,6 +51,84 @@ func writeCounties(provider providers.IVoterDataProvider) {
         close(chnl)
     }()
     writeCsv("/working/export/counties.csv", models.GetCountyCSVHeader(), chnl)
+}
+
+func writeElections(provider providers.IVoterDataProvider) {
+    chnl := make(chan models.IExportable)
+    go func() {
+        for election := range provider.ParseElections() {
+            obj := models.Election{}
+            copier.Copy(&obj, &election)
+            chnl <- &obj
+        }
+        close(chnl)
+    }()
+    writeCsv("/working/export/elections.csv", models.GetElectionCSVHeader(), chnl)
+}
+
+func writeJurisdictions(provider providers.IVoterDataProvider) {
+    chnl := make(chan models.IExportable)
+    go func() {
+        for jurisdiction := range provider.ParseJurisdictions() {
+            obj := models.Jurisdiction{}
+            copier.Copy(&obj, &jurisdiction)
+            chnl <- &obj
+        }
+        close(chnl)
+    }()
+    writeCsv("/working/export/jurisdictions.csv", models.GetJurisdictionCSVHeader(), chnl)
+}
+
+func writeSchoolDistricts(provider providers.IVoterDataProvider) {
+    chnl := make(chan models.IExportable)
+    go func() {
+        for schoolDistrict := range provider.ParseSchools() {
+            obj := models.SchoolDistrict{}
+            copier.Copy(&obj, &schoolDistrict)
+            chnl <- &obj
+        }
+        close(chnl)
+    }()
+    writeCsv("/working/export/schoolDistricts.csv", models.GetSchoolDistrictCSVHeader(), chnl)
+}
+
+func writeVillages(provider providers.IVoterDataProvider) {
+    chnl := make(chan models.IExportable)
+    go func() {
+        for village := range provider.ParseVillages() {
+            obj := models.Village{}
+            copier.Copy(&obj, &village)
+            chnl <- &obj
+        }
+        close(chnl)
+    }()
+    writeCsv("/working/export/villages.csv", models.GetVillageCSVHeader(), chnl)
+}
+
+func writeVoters(provider providers.IVoterDataProvider) {
+    chnl := make(chan models.IExportable)
+    go func() {
+        for voter := range provider.ParseVoters() {
+            obj := models.Voter{}
+            copier.Copy(&obj, &voter)
+            chnl <- &obj
+        }
+        close(chnl)
+    }()
+    writeCsv("/working/export/voters.csv", models.GetVoterCSVHeader(), chnl)
+}
+
+func writeVoterHistories(provider providers.IVoterDataProvider) {
+    chnl := make(chan models.IExportable)
+    go func() {
+        for voterHistory := range provider.ParseVoterHistories() {
+            obj := models.VoterHistory{}
+            copier.Copy(&obj, &voterHistory)
+            chnl <- &obj
+        }
+        close(chnl)
+    }()
+    writeCsv("/working/export/voterHistories.csv", models.GetVoterHistoryCSVHeader(), chnl)
 }
 
 func writeCsv(filename string, header []string, chnl <-chan models.IExportable) {
