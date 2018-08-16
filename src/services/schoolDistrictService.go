@@ -12,7 +12,6 @@ package services
 
 import (
     "github.com/jinzhu/gorm"
-    _ "github.com/jinzhu/gorm/dialects/mysql"
 
     skaioskit "github.com/nathanmentley/skaioskit-go-core"
 
