@@ -33,10 +33,8 @@ var exportCmd = &cobra.Command{
         writeJurisdictions(provider)
         writeSchoolDistricts(provider)
         writeVillages(provider)
-        /*
         writeVoters(provider)
         writeVoterHistories(provider)
-        */
     },
 }
 

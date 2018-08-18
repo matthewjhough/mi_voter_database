@@ -11,20 +11,6 @@ spec:
     requests:
       storage: 20Gi
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: voter-service-mysql
-  labels:
-    app: voter-service-mysql
-spec:
-  ports:
-    - port: 3306
-  selector:
-    app: voter-service-mysql
-    tier: mysql
-  clusterIP: None
----
 apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
@@ -71,18 +57,6 @@ spec:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: voter-service-mysql-pv-claim
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: voter-service
-spec:
-  selector:
-    app: voter-service
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -148,6 +122,19 @@ spec:
             persistentVolumeClaim:
               claimName: voter-service-data-pv-claim
           restartPolicy: OnFailure
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: voter-service
+spec:
+  selector:
+    app: voter-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: NodePort
 ---
 kind: Service
 apiVersion: v1
