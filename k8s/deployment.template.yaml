@@ -184,13 +184,24 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: voter-service
+  name: voter-service-lb
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: voter-service
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+  - port: 80
+    nodePort: 30080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: voter-service-mysql-lb
+spec:
+  type: NodePort
+  selector:
+    app: voter-service-mysql
+  ports:
+  - port: 3306
+    nodePort: 30306
 ---

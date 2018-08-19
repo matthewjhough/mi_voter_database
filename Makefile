@@ -33,4 +33,4 @@ export:
 	docker run -it -v ${DIR}/data:/data -v ${DIR}/working:/working localhost:5000/skaioskit/voter-service /voter export
 
 stop:
-	kubectl delete deployments,services,pods,pvc,cronjob,job --all
+	kubectl delete deployments,services,pods,pv,pvc,cronjob,job --all
