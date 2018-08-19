@@ -1,3 +1,18 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: voter-service-mysql-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/nathan/Projects/mi_voter_database/working/mysql"
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -5,6 +20,7 @@ metadata:
   labels:
     app: voter-service
 spec:
+  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
@@ -58,6 +74,19 @@ spec:
         persistentVolumeClaim:
           claimName: voter-service-mysql-pv-claim
 ---
+kind: Service
+apiVersion: v1
+metadata:
+  name: voter-service-mysql
+spec:
+  selector:
+    app: voter-service-mysql
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306
+  type: NodePort
+---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -91,11 +120,27 @@ metadata:
   labels:
     app: voter-service
 spec:
+  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 20Gi
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: voter-service-data-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/nathan/Projects/mi_voter_database/data"
 ---
 apiVersion: batch/v1beta1
 kind: CronJob
